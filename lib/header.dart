@@ -15,8 +15,8 @@ class HeaderBlock extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            width: 300,
-            height: 200,
+            width: 158,
+            height: 158,
             child: GestureDetector(
               onTap: () {
                 Navigator.push(
@@ -181,7 +181,7 @@ class LoginButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.white,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(5),
             side: BorderSide(color: Colors.grey),
           ),
           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -203,12 +203,13 @@ class SearchBar extends StatelessWidget {
         labelText: 'Пошук товарів',
         suffixIcon: Icon(Icons.search, color: Colors.green),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30),
-          borderSide: BorderSide(color: Colors.grey),
+          borderRadius: BorderRadius.circular(5),
+          borderSide: BorderSide(color: Colors.grey, width: 0.5),
+          
         ),
         contentPadding: EdgeInsets.symmetric(
           horizontal: 20,
-          vertical: 15,
+          vertical: 20,
         ),
       ),
     );

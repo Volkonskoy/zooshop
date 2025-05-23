@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'header.dart';
 import 'footer.dart';
+import 'package:zooshop/main.dart';
 
 class ProductPage extends StatelessWidget {
   const ProductPage({super.key});
@@ -170,18 +171,12 @@ class PriceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 200,
-      height: 150,
+      width: 264,
+      height: 200,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black26,
-            blurRadius: 4,
-            offset: Offset(0, 2),
-          ),
-        ],
+        borderRadius: BorderRadius.circular(5),
+        border: Border.all(color: Colors.grey.shade400),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -189,18 +184,23 @@ class PriceCard extends StatelessWidget {
           Text(
             "$newPrice ₴",
             style: TextStyle(
-              color: Colors.red,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
+              color: Color(0xFFF54949),
+              fontSize: 24,
+              fontWeight: FontWeight.w900,
             ),
           ),
           SizedBox(height: 10),
-          SizedBox(
-            width: 150,
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 27),
+            width: double.infinity,
+            height: 40,
             child: ElevatedButton(
               onPressed: () {},
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.lightGreenAccent,
+                backgroundColor: Color(0xFF95C74E),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5), 
+                ),
               ),
               child: Text(
                 "Купити",
@@ -208,6 +208,29 @@ class PriceCard extends StatelessWidget {
               ),
             ),
           ),
+          SizedBox(height: 11),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 27),
+            width: double.infinity,
+            height: 40,
+            child: OutlinedButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => OneClickOrderDialog(), 
+                );
+              },
+              style: OutlinedButton.styleFrom(
+                side: BorderSide(color: Color(0xFF95C74E)), 
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                foregroundColor: Color(0xFF95C74E), 
+              ),
+              child: Text("Купити в один клік"),
+            ),
+          ),
+
         ],
       ),
     );
@@ -279,112 +302,112 @@ class RecomendationBlock extends StatelessWidget {
   }
 }
 
-class ProductCard extends StatelessWidget {
-  const ProductCard({super.key});
+// class ProductCard extends StatelessWidget {
+//   const ProductCard({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 200,
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black26,
-            blurRadius: 4,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          // Изображение продукта
-          SizedBox(height: 10),
-          Image.asset(
-            'assets/images/product.png', // Путь к изображению товара
-            height: 120,
-            fit: BoxFit.cover,
-          ),
-          SizedBox(height: 10),
-          // Название продукта
-          Text(
-            'Brit Care Mono Protein',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          // Описание
-          Text(
-            'вологий корм для собак 400 г - кролик',
-            style: TextStyle(
-              color: Colors.grey,
-              fontSize: 12,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          // Цена
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                '298 ₴',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
-              ),
-              SizedBox(width: 8),
-              Text(
-                '450 ₴',
-                style: TextStyle(
-                  decoration: TextDecoration.lineThrough,
-                  color: Colors.grey,
-                  fontSize: 14,
-                ),
-              ),
-            ],
-          ),
-          // Кнопка
-          SizedBox(height: 10),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ProductPage(),
-                ),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.purple, // Цвет кнопки
-              padding: EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 12,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-            child: Text(
-              'Купити',
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-          // Кнопка "Купить за 1 клик"
-          SizedBox(height: 10),
-          TextButton(
-            onPressed: () {},
-            child: Text(
-              'Купити за 1 клік',
-              style: TextStyle(color: Colors.purple),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       width: 200,
+//       padding: EdgeInsets.all(16),
+//       decoration: BoxDecoration(
+//         color: Colors.white,
+//         borderRadius: BorderRadius.circular(12),
+//         boxShadow: [
+//           BoxShadow(
+//             color: Colors.black26,
+//             blurRadius: 4,
+//             offset: Offset(0, 2),
+//           ),
+//         ],
+//       ),
+//       child: Column(
+//         children: [
+//           // Изображение продукта
+//           SizedBox(height: 10),
+//           Image.asset(
+//             'assets/images/product.png', // Путь к изображению товара
+//             height: 120,
+//             fit: BoxFit.cover,
+//           ),
+//           SizedBox(height: 10),
+//           // Название продукта
+//           Text(
+//             'Brit Care Mono Protein',
+//             style: TextStyle(
+//               fontWeight: FontWeight.bold,
+//               fontSize: 16,
+//             ),
+//             textAlign: TextAlign.center,
+//           ),
+//           // Описание
+//           Text(
+//             'вологий корм для собак 400 г - кролик',
+//             style: TextStyle(
+//               color: Colors.grey,
+//               fontSize: 12,
+//             ),
+//             textAlign: TextAlign.center,
+//           ),
+//           // Цена
+//           Row(
+//             mainAxisAlignment: MainAxisAlignment.center,
+//             children: [
+//               Text(
+//                 '298 ₴',
+//                 style: TextStyle(
+//                   fontWeight: FontWeight.bold,
+//                   fontSize: 16,
+//                 ),
+//               ),
+//               SizedBox(width: 8),
+//               Text(
+//                 '450 ₴',
+//                 style: TextStyle(
+//                   decoration: TextDecoration.lineThrough,
+//                   color: Colors.grey,
+//                   fontSize: 14,
+//                 ),
+//               ),
+//             ],
+//           ),
+//           // Кнопка
+//           SizedBox(height: 10),
+//           ElevatedButton(
+//             onPressed: () {
+//               Navigator.push(
+//                 context,
+//                 MaterialPageRoute(
+//                   builder: (context) => ProductPage(),
+//                 ),
+//               );
+//             },
+//             style: ElevatedButton.styleFrom(
+//               backgroundColor: Colors.purple, // Цвет кнопки
+//               padding: EdgeInsets.symmetric(
+//                 horizontal: 20,
+//                 vertical: 12,
+//               ),
+//               shape: RoundedRectangleBorder(
+//                 borderRadius: BorderRadius.circular(8),
+//               ),
+//             ),
+//             child: Text(
+//               'Купити',
+//               style: TextStyle(color: Colors.white),
+//             ),
+//           ),
+//           // Кнопка "Купить за 1 клик"
+//           SizedBox(height: 10),
+//           TextButton(
+//             onPressed: () {},
+//             child: Text(
+//               'Купити за 1 клік',
+//               style: TextStyle(color: Colors.purple),
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }

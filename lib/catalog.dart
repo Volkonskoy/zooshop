@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:zooshop/product.dart';
+import 'package:zooshop/main.dart';
 import 'header.dart';
 import 'footer.dart';
 
@@ -7,73 +8,66 @@ class CatalogPage extends StatelessWidget {
   const CatalogPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Center(
-          child: SizedBox(
-            width: 1300,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: SizedBox(
-                    width: 1200,
-                    child: HeaderBlock(),
-                  ),
-                ),
-                SizedBox(height: 20),
-                Center(
-                  child: SizedBox(
-                    width: 1240,
-                    child: Row(
-                      mainAxisAlignment:
-                          MainAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Товари для собак",
-                          textAlign: TextAlign.end,
-                          style: TextStyle(
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold,
-                            color: const Color.fromARGB(
-                              255,
-                              69,
-                              48,
-                              40,
+Widget build(BuildContext context) {
+  final screenWidth = MediaQuery.of(context).size.width;
+
+  return Scaffold(
+    backgroundColor: Colors.white,
+    body: SingleChildScrollView(
+      child: Column(
+        children: [
+          Center(
+            child: SizedBox(
+              width: screenWidth * 0.82,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  HeaderBlock(),
+                  SizedBox(height: 20),
+                  Center(
+                    child: Container(
+                      padding: EdgeInsets.only(left: 20),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Товари для собак",
+                            textAlign: TextAlign.end,
+                            style: TextStyle(
+                              fontSize: 30,
+                              fontWeight: FontWeight.bold,
+                              color: Color.fromARGB(255, 69, 48, 40),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                SizedBox(height: 40),
-                Row(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
-                  mainAxisAlignment:
-                      MainAxisAlignment.spaceEvenly,
-                  children: [
-                    SettingsBlock(),
-                    ProductsBlock(),
-                  ],
-                ),
-                SizedBox(height: 70),
-                Center(
-                  child: SizedBox(
-                    width: 1200,
-                    child: FooterBlock(),
-                  ),
-                ),
-              ],
+                  SizedBox(height: 40),
+                  Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        SettingsBlock(),
+                        ProductsBlock(),
+                      ],
+                    ),
+                  SizedBox(height: 70),
+                ],
+              ),
             ),
           ),
-        ),
+
+          Container(
+            width: screenWidth,
+            child: FooterBlock(), 
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
+
 }
 
 class SettingsBlock extends StatelessWidget {
@@ -327,7 +321,7 @@ class ProductsBlock extends StatelessWidget {
     return Column(
       children: [
         Row(
-          spacing: 30,
+          mainAxisAlignment: MainAxisAlignment.start, 
           children: [
             ProductCard(),
             ProductCard(),
@@ -335,9 +329,8 @@ class ProductsBlock extends StatelessWidget {
             ProductCard(),
           ],
         ),
-        SizedBox(height: 50),
         Row(
-          spacing: 30,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             ProductCard(),
             ProductCard(),
@@ -345,9 +338,8 @@ class ProductsBlock extends StatelessWidget {
             ProductCard(),
           ],
         ),
-        SizedBox(height: 50),
         Row(
-          spacing: 30,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             ProductCard(),
             ProductCard(),
@@ -362,94 +354,109 @@ class ProductsBlock extends StatelessWidget {
   }
 }
 
+
 class ProductCard extends StatelessWidget {
   const ProductCard({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 200,
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(4),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black26,
-            blurRadius: 4,
-            offset: Offset(0, 2),
+    return InkWell(
+      borderRadius: BorderRadius.circular(4),
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ProductPage()),
+        );
+      },
+      child: Container(
+        constraints: BoxConstraints(
+          maxWidth: 220,
+          maxHeight: 480,
+        ),
+        padding: EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(4),
+          border: Border.all(
+            color: Colors.grey,
+            width: 0.5,
           ),
-        ],
-      ),
-      child: Column(
-        children: [
-          
-          Image.asset(
-            'assets/images/product.png', 
-            height: 120,
-            fit: BoxFit.cover,
-          ),
-          SizedBox(height: 10),
-          Text(
-            'Brit Care Mono Protein вологий корм для собак 400 г - кролик',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        SizedBox(height: 75),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Text(
-                '298 ₴',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Container(
+              width: 190,
+              height: 190,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: Image.asset(
+                  'assets/images/product.png',
+                  fit: BoxFit.cover,
                 ),
               ),
-              SizedBox(width: 8),
-              Text(
-                '450 ₴',
-                style: TextStyle(
-                  decoration: TextDecoration.lineThrough,
-                  color: Colors.grey,
-                  fontSize: 14,
+            ),
+            SizedBox(height: 10),
+            Text(
+              'Brit Care Mono Protein вологий корм для собак 400 г - кролик',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+            ),
+            Spacer(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Text(
+                  '298 ₴',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 20,
+                  ),
+                ),
+                SizedBox(width: 8),
+                Text(
+                  '450 ₴',
+                  style: TextStyle(
+                    decoration: TextDecoration.lineThrough,
+                    color: Colors.grey,
+                    fontSize: 16,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 10),
+            SizedBox(
+              width: double.infinity,
+              height: 40,
+              child: ElevatedButton(
+                onPressed: () {},
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFF95C74E),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: Text(
+                  'Купити',
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
-            ],
-          ),
-          SizedBox(height: 10),
-          SizedBox( 
-            width: 190,
-            child: ElevatedButton(
-            onPressed: () {},
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Color(0xFF95C74E),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
             ),
-            child: Text(
-              'Купити',
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-          ),
-          SizedBox(height: 10),
-          TextButton(
-            onPressed: () {},
-            child: Text(
-              'Купити за 1 клік',
-              style: TextStyle(color: Color(0xFF95C74E), fontSize: 14, fontWeight: FontWeight.w500),
-            ),
-          ),
-        ],
+            SizedBox(height: 15),
+            OneClickOrderText()
+
+          ],
+        ),
       ),
     );
   }
 }
+
 
 class PaginationWidget extends StatefulWidget {
   const PaginationWidget({super.key});

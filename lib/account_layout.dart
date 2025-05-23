@@ -37,7 +37,7 @@ class AccountLayout extends StatelessWidget {
                   HeaderBlock(),
                   SizedBox(height: 10),
                   Padding(
-                    padding: EdgeInsets.only(left: 50),
+                    padding: EdgeInsets.only(left: 20, top: 20),
                     child: Text(
                       activeMenu,
                       style: GoogleFonts.montserrat(
@@ -52,7 +52,7 @@ class AccountLayout extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
-                        padding: EdgeInsets.only(left: 50),
+                        padding: EdgeInsets.only(left: 20),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [

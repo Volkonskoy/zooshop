@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:zooshop/orders_page.dart';
 import 'package:zooshop/subscription_page.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter/gestures.dart';
 
 void main() {
   runApp(
@@ -83,9 +84,9 @@ class MainPage extends StatelessWidget {
                 PromoVetCard(),
                 SizedBox(height: 50),
                 SalesBlock(),
-                SizedBox(height: 50),
+                SizedBox(height: 130),
                 PromoConsultCard(),
-                SizedBox(height: 50),
+                SizedBox(height: 100),
                 NewsBlock(),
                 SizedBox(height: 50),
                 BrandsBlock(),
@@ -109,70 +110,79 @@ class PromoVetCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(50),
-      height: 300,
+      height: 400,
       decoration: BoxDecoration(
         color: Color(0xFF95C74E),
-        borderRadius: BorderRadius.circular(
-          16,
-        ), 
+        borderRadius: BorderRadius.circular(16),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Stack(
+        clipBehavior: Clip.none,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Кошталтість сильно підвищиться!',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-              SizedBox(height: 10),
-              Text(
-                'Знижка 20% на всі шампуні для кошенят.',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.white,
-                ),
-              ),
-              SizedBox(height: 80),
-              SizedBox(
-                height: 50,
-                child: ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      Color(0xFFC16AFF),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: Row(
-                  spacing: 20,
-                  children: [
-                    Text(
-                      'Дивитися шампуні',
-                      style: TextStyle(color: Colors.white, fontSize: 16),
-                    ),
-                    Icon(
-                      Icons.arrow_forward,
+           
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Кошталтість сильно\n підвищиться!',
+                    style: TextStyle(
+                      fontSize: 40,
+                      fontWeight: FontWeight.w800,
                       color: Colors.white,
                     ),
-                  ],
-                ),
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    'Знижка 20% на всі шампуні\n для кошенят.',
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.white,
+                    ),
+                  ),
+                  SizedBox(height: 65),
+                  SizedBox(
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFFC16AFF),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Text(
+                            'Дивитися шампуні',
+                            style: TextStyle(color: Colors.white, fontSize: 16),
+                          ),
+                          SizedBox(width: 20),
+                          Icon(
+                            Icons.arrow_forward,
+                            color: Colors.white,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ),
-              
+              SizedBox(width: 450), 
             ],
           ),
-          SizedBox(
-            width: 300,
-            height: 300,
-            child: Image(
-              image: AssetImage('assets/images/cat.png'),
+         
+          Positioned(
+            right: -50, 
+            top: -100,
+            child: SizedBox(
+              width: 450,
+              height: 450,
+              child: Image.asset(
+                'assets/images/cat.png',
+                fit: BoxFit.cover,
+              ),
             ),
           ),
         ],
@@ -181,6 +191,7 @@ class PromoVetCard extends StatelessWidget {
   }
 }
 
+
 class PromoConsultCard extends StatelessWidget {
   const PromoConsultCard({super.key});
 
@@ -188,72 +199,77 @@ class PromoConsultCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(50),
-      height: 300,
+      height: 400,
       decoration: BoxDecoration(
-        color: Colors.orangeAccent, 
-        borderRadius: BorderRadius.circular(
-          16,
-        ), // Округлые углы
+        color: Color(0xFFFF9955),
+        borderRadius: BorderRadius.circular(16),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Stack(
+        clipBehavior: Clip.none, 
         children: [
-          // Текстовая часть
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Ми готові оказати вам підтримку в виборі',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-              SizedBox(height: 10),
-              Text(
-                'Безкоштовні консультації',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.white,
-                ),
-              ),
-              SizedBox(height: 80),
-              SizedBox(
-                height: 50,
-                child:ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      Color(0xFF95C74E),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: Row(
-                  spacing: 20,
-                  children: [
-                    Text(
-                      'Зв`язок з консультантом',
-                      style: TextStyle(color: Colors.white, fontSize: 16),
-                    ),
-                    Icon(
-                      Icons.arrow_forward,
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Ми готові оказати вам\n підтримку в виборі',
+                    style: TextStyle(
+                      fontSize: 40,
+                      fontWeight: FontWeight.w800,
                       color: Colors.white,
                     ),
-                  ],
-                ),
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    'Безкоштовні консультації',
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.white,
+                    ),
+                  ),
+                  SizedBox(height: 75),
+
+                  SizedBox(
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFF95C74E),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            "Зв'язок з консультантом",
+                            style: TextStyle(color: Colors.white, fontSize: 16),
+                          ),
+                          SizedBox(width: 20),
+                          Icon(
+                            Icons.arrow_forward,
+                            color: Colors.white,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              ),
+              SizedBox(width: 150), 
             ],
           ),
-          SizedBox(
-            width: 300,
-            height: 300,
-            child: Image(
-              image: AssetImage(
-                'assets/images/consultant.png',
-              ),
+          Positioned(
+            right: -50,
+            top: -100,
+            width: 450,
+            height: 450,
+            child: Image.asset(
+              'assets/images/consultant.png',
+              fit: BoxFit.cover,
             ),
           ),
         ],
@@ -402,10 +418,10 @@ class ProductCard extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: 10),
           Image.asset(
             'assets/images/product.png', 
-            height: 120,
+            height: 190,
+            width: 190,
             fit: BoxFit.cover,
           ),
           SizedBox(height: 10),
@@ -440,30 +456,38 @@ class ProductCard extends StatelessWidget {
             ],
           ),
           SizedBox(height: 10),
-          SizedBox( 
-            width: 190,
+          SizedBox(
+            width: double.infinity, 
+            height: 35,
             child: ElevatedButton(
-            onPressed: () {},
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Color(0xFFC16AFF),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+              onPressed: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      'Товар додано до кошика',
+                      style: TextStyle(color: Colors.white), 
+                    ),
+
+                    duration: Duration(seconds: 2),
+                    backgroundColor: Color(0xFF95C74E),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFFC16AFF), 
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5), 
+                ),
               ),
-            ),
-            child: Text(
-              'Купити',
-              style: TextStyle(color: Colors.white),
+              child: Text('Купити', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),),
             ),
           ),
+         SizedBox(height: 10),
+          Padding(
+            padding: const EdgeInsets.only(top: 10), 
+            child: OneClickOrderText(),
           ),
-          SizedBox(height: 10),
-          TextButton(
-            onPressed: () {},
-            child: Text(
-              'Купити за 1 клік',
-              style: TextStyle(color: Color(0xFFC16AFF), fontSize: 14, fontWeight: FontWeight.w500),
-            ),
-          ),
+
         ],
       ),
     );
@@ -519,34 +543,149 @@ class BrandsBlock extends StatelessWidget {
     );
   }
 
-Widget _buildLogo(String imagePath, bool line) {
-  return Row(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      SizedBox(
-        width: 150,
-        height: 150,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(8),
-          child: Image.asset(
-            imagePath,
-            fit: BoxFit.contain,
+  Widget _buildLogo(String imagePath, bool line) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: 150,
+          height: 150,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Image.asset(
+              imagePath,
+              fit: BoxFit.contain,
+            ),
           ),
         ),
-      ),
-      if (line)
-        Padding(
-          padding: const EdgeInsets.only(left: 22.0), 
-          child: Container(
-            width: 2,
-            height: 150,
-            color: Color(0xFFE0E0E0),
+        if (line)
+          Padding(
+            padding: const EdgeInsets.only(left: 22.0), 
+            child: Container(
+              width: 2,
+              height: 150,
+              color: Color(0xFFE0E0E0),
+            ),
           ),
-        ),
-    ],
-  );
+      ],
+    );
+  }
+
 }
 
+class OneClickOrderText extends StatelessWidget {
+  const OneClickOrderText({super.key});
 
+  @override
+  Widget build(BuildContext context) {
+    return Text.rich(
+      TextSpan(
+        text: '',
+        children: [
+          TextSpan(
+            text: 'Купити за 1 клік',
+            style: TextStyle(
+              color: Color(0xFF95C74E),
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+            recognizer: TapGestureRecognizer()
+              ..onTap = () {
+                showDialog(
+                  context: context,
+                  builder: (context) => OneClickOrderDialog(),
+                );
+              },
+          ),
+        ],
+      ),
+    );
+  }
+}
+class OneClickOrderDialog extends StatefulWidget {
+  @override
+  _OneClickOrderDialogState createState() => _OneClickOrderDialogState();
+}
+
+class _OneClickOrderDialogState extends State<OneClickOrderDialog> {
+  final _nameController = TextEditingController();
+  final _phoneController = TextEditingController();
+
+ @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      backgroundColor: Colors.white,
+      content: Stack(
+        children: [
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(height: 35),
+              Center(
+                child: Text(
+                  "Для замовлення в 1 клік\nвкажіть своє ім’я та номер\nтелефону",
+                  style: TextStyle(fontSize: 20),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              SizedBox(height: 30),
+              TextField(
+                controller: _nameController,
+                decoration: InputDecoration(
+                  labelText: 'Ім’я',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                ),
+              ),
+              SizedBox(height: 15),
+              TextField(
+                controller: _phoneController,
+                decoration: InputDecoration(
+                  labelText: 'Телефон',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                ),
+                keyboardType: TextInputType.phone,
+              ),
+              SizedBox(height: 25),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    final name = _nameController.text;
+                    final phone = _phoneController.text;
+                    print('Надіслано: $name, $phone');
+                    Navigator.pop(context);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF95C74E),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    padding: EdgeInsets.symmetric(vertical: 18),
+                  ),
+                  child: Text(
+                    'Надіслати',
+                    style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          
+          Positioned(
+            top: 0,
+            right: 0,
+            child: IconButton(
+              icon: Icon(Icons.close),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
 }
