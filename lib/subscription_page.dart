@@ -82,7 +82,7 @@ Widget _buildSubscriptionCard(Subscription subscription, int index) {
                         IconButton(
                           icon: Icon(Icons.remove),
                           onPressed: () {
-                            // уменьшить количество
+                            
                           },
                           iconSize: 20,
                           constraints: BoxConstraints(),
@@ -91,14 +91,14 @@ Widget _buildSubscriptionCard(Subscription subscription, int index) {
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           child: Text(
-                            '1', // текущая величина
+                            '1', 
                             style: TextStyle(fontSize: 16),
                           ),
                         ),
                         IconButton(
                           icon: Icon(Icons.add),
                           onPressed: () {
-                            // увеличить количество
+                            
                           },
                           iconSize: 20,
                           constraints: BoxConstraints(),
