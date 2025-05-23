@@ -4,7 +4,7 @@ import 'footer.dart';
 import 'package:provider/provider.dart';
 import 'package:zooshop/orders_page.dart';
 import 'package:zooshop/subscription_page.dart';
-
+import 'package:google_fonts/google_fonts.dart';
 
 void main() {
   runApp(
@@ -51,7 +51,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Zooshop',
-      home: MainPage()
+      theme: ThemeData(
+        textTheme: GoogleFonts.montserratTextTheme(
+          Theme.of(context).textTheme,
+        ),
+      ),
+      home: MainPage(),
     );
   }
 }
@@ -61,12 +66,16 @@ class MainPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+      
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
-        child: Center(
+        child: Column(
+      children: [
+        Center(
           child: SizedBox(
-            width: 1200,
+            width: screenWidth * 0.82,
             child: Column(
               children: [
                 HeaderBlock(),
@@ -81,13 +90,15 @@ class MainPage extends StatelessWidget {
                 SizedBox(height: 50),
                 BrandsBlock(),
                 SizedBox(height: 70),
-                FooterBlock(),
               ],
             ),
           ),
         ),
-      ),
-    );
+        FooterBlock(),  
+      ],
+    ),
+  ),
+);
   }
 }
 
@@ -103,12 +114,11 @@ class PromoVetCard extends StatelessWidget {
         color: Color(0xFF95C74E),
         borderRadius: BorderRadius.circular(
           16,
-        ), // Округлые углы
+        ), 
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Текстовая часть
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -129,7 +139,9 @@ class PromoVetCard extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 80),
-              ElevatedButton(
+              SizedBox(
+                height: 50,
+                child: ElevatedButton(
                 onPressed: () {},
                 style: ElevatedButton.styleFrom(
                   backgroundColor:
@@ -143,7 +155,7 @@ class PromoVetCard extends StatelessWidget {
                   children: [
                     Text(
                       'Дивитися шампуні',
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(color: Colors.white, fontSize: 16),
                     ),
                     Icon(
                       Icons.arrow_forward,
@@ -152,6 +164,8 @@ class PromoVetCard extends StatelessWidget {
                   ],
                 ),
               ),
+            ),
+              
             ],
           ),
           SizedBox(
@@ -205,7 +219,9 @@ class PromoConsultCard extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 80),
-              ElevatedButton(
+              SizedBox(
+                height: 50,
+                child:ElevatedButton(
                 onPressed: () {},
                 style: ElevatedButton.styleFrom(
                   backgroundColor:
@@ -219,7 +235,7 @@ class PromoConsultCard extends StatelessWidget {
                   children: [
                     Text(
                       'Зв`язок з консультантом',
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(color: Colors.white, fontSize: 16),
                     ),
                     Icon(
                       Icons.arrow_forward,
@@ -227,6 +243,7 @@ class PromoConsultCard extends StatelessWidget {
                     ),
                   ],
                 ),
+              ),
               ),
             ],
           ),
@@ -251,7 +268,6 @@ class SalesBlock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 1000,
       child: Column(
         children: [
           Row(
@@ -286,6 +302,7 @@ class SalesBlock extends StatelessWidget {
               ProductCard(),
               ProductCard(),
               ProductCard(),
+              ProductCard(),
             ],
           ),
         ],
@@ -300,7 +317,6 @@ class NewsBlock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 1000,
       child: Column(
         children: [
           Row(
@@ -335,6 +351,8 @@ class NewsBlock extends StatelessWidget {
               ProductCard(),
               ProductCard(),
               ProductCard(),
+
+              ProductCard(),
             ],
           ),
         ],
@@ -353,7 +371,7 @@ class ProductCard extends StatelessWidget {
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(4),
         boxShadow: [
           BoxShadow(
             color: Colors.black26,
@@ -392,21 +410,14 @@ class ProductCard extends StatelessWidget {
           ),
           SizedBox(height: 10),
           Text(
-            'Brit Care Mono Protein',
+            'Brit Care Mono Protein вологий корм для собак 400 г - кролик',
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              fontSize: 16,
+              fontSize: 14,
             ),
             textAlign: TextAlign.center,
           ),
-          Text(
-            'вологий корм для собак 400 г - кролик',
-            style: TextStyle(
-              color: Colors.grey,
-              fontSize: 12,
-            ),
-            textAlign: TextAlign.center,
-          ),
+        SizedBox(height: 75),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -429,14 +440,12 @@ class ProductCard extends StatelessWidget {
             ],
           ),
           SizedBox(height: 10),
-          ElevatedButton(
+          SizedBox( 
+            width: 190,
+            child: ElevatedButton(
             onPressed: () {},
             style: ElevatedButton.styleFrom(
               backgroundColor: Color(0xFFC16AFF),
-              padding: EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 12,
-              ),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
@@ -446,12 +455,13 @@ class ProductCard extends StatelessWidget {
               style: TextStyle(color: Colors.white),
             ),
           ),
+          ),
           SizedBox(height: 10),
           TextButton(
             onPressed: () {},
             child: Text(
               'Купити за 1 клік',
-              style: TextStyle(color: Color(0xFFC16AFF)),
+              style: TextStyle(color: Color(0xFFC16AFF), fontSize: 14, fontWeight: FontWeight.w500),
             ),
           ),
         ],
@@ -478,7 +488,7 @@ class BrandsBlock extends StatelessWidget {
             ),
           ],
         ),
-        SizedBox(height: 15),
+        SizedBox(height: 50),
         Container(
           padding: EdgeInsets.only(left: 16, right: 16),
           decoration: BoxDecoration(
@@ -496,13 +506,12 @@ class BrandsBlock extends StatelessWidget {
             mainAxisAlignment:
                 MainAxisAlignment.spaceBetween,
             children: [
-              // Логотипы в одном ряду
-              _buildLogo('assets/images/royalcanin.png'),
-              _buildLogo('assets/images/whiskas.png'),
-              _buildLogo('assets/images/royalcanin.png'),
-              _buildLogo('assets/images/whiskas.png'),
-              _buildLogo('assets/images/royalcanin.png'),
-              _buildLogo('assets/images/whiskas.png'),
+              _buildLogo('assets/images/royalcanin.png', true),
+              _buildLogo('assets/images/whiskas.png', true),
+              _buildLogo('assets/images/royalcanin.png', true),
+              _buildLogo('assets/images/whiskas.png', true),
+              _buildLogo('assets/images/royalcanin.png', true),
+              _buildLogo('assets/images/whiskas.png', false),
             ],
           ),
         ),
@@ -510,21 +519,34 @@ class BrandsBlock extends StatelessWidget {
     );
   }
 
-  Widget _buildLogo(String imagePath) {
-    return SizedBox(
-      width: 150, // Фиксированная ширина
-      height: 150, // Фиксированная высота
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(
-          8,
-        ), // Округление углов внутри контейнера
-        child: Image.asset(
-          imagePath,
-          fit:
-              BoxFit
-                  .contain, // Растягивание изображения по контейнеру
+Widget _buildLogo(String imagePath, bool line) {
+  return Row(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      SizedBox(
+        width: 150,
+        height: 150,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: Image.asset(
+            imagePath,
+            fit: BoxFit.contain,
+          ),
         ),
       ),
-    );
-  }
+      if (line)
+        Padding(
+          padding: const EdgeInsets.only(left: 22.0), 
+          child: Container(
+            width: 2,
+            height: 150,
+            color: Color(0xFFE0E0E0),
+          ),
+        ),
+    ],
+  );
+}
+
+
+
 }

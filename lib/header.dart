@@ -8,50 +8,58 @@ class HeaderBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        SizedBox(
-          width: 300,
-          height: 200,
-          child: GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => MainPage(),
-                ),
-              );
-            },
-            child: Image(
-              image: AssetImage('assets/images/logo.png'),
+    return Container(
+      width: double.infinity, 
+      padding: EdgeInsets.only(top: 30),  
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 300,
+            height: 200,
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => MainPage(),
+                  ),
+                );
+              },
+              child: Image(
+                image: AssetImage('assets/images/logo.png'),
+              ),
             ),
           ),
-        ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            MenuTopNavigation(),
-            SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              spacing: 30.0,
+          SizedBox(width: 20), 
+          Expanded(  
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(
-                  width:
-                      600, // Ограничиваем ширину SearchBar
-                  child: SearchBar(),
+                MenuTopNavigation(),
+                SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      flex: 3,
+                      child: SearchBar(),
+                    ),
+                    SizedBox(width: 20),
+                    LoginButton(),
+                  ],
                 ),
-                LoginButton(),
+                SizedBox(height: 20),
+                MenuBottomNavigation(),
               ],
             ),
-            SizedBox(height: 20),
-            MenuBottomNavigation(),
-          ],
-        ),
-      ],
+          ),
+        ],
+      ),
     );
   }
 }
+
 
 class MenuTopNavigation extends StatelessWidget {
   const MenuTopNavigation({super.key});
@@ -152,39 +160,38 @@ class LoginButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton.icon(
-      onPressed: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => AccountPage()));
-      },
-      icon: Icon(
-        Icons.person, 
-        color: Colors.green,
-      ),
-      label: Text(
-        'Log In/Sign In',
-        style: TextStyle(
-          color: Colors.brown, 
-          fontWeight: FontWeight.bold,
+    return SizedBox(
+      width: 165,
+      height: 60,
+      child: ElevatedButton.icon(
+        onPressed: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context) => AccountPage()));
+        },
+        icon: Icon(
+          Icons.person,
+          color: Colors.green,
         ),
-      ),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.white, 
-        padding: EdgeInsets.symmetric(
-          horizontal: 20,
-          vertical: 12,
+        label: Text(
+          'Log In/Sign In',
+          style: TextStyle(
+            color: Colors.brown,
+            fontWeight: FontWeight.bold,
+          ),
         ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(
-            30,
-          ), 
-          side: BorderSide(
-            color: Colors.grey,
-          ), 
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+            side: BorderSide(color: Colors.grey),
+          ),
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+       
         ),
       ),
     );
   }
 }
+
 
 class SearchBar extends StatelessWidget {
   const SearchBar({super.key});

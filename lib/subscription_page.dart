@@ -62,12 +62,23 @@ Widget _buildSubscriptionCard(Subscription subscription, int index) {
                 SizedBox(height: 29),
                 Row(
                   children: [
-                    TextButton.icon(
-                    onPressed: () => _confirmDelete(index),
-                    icon: Icon(Icons.delete, color: Color(0xFFF54949)),
-                    label: Text(
-                      'Скасувати підписку',
-                      style: TextStyle(color: Color(0xFFF54949), fontSize: 16),
+                  MouseRegion(
+                    cursor: SystemMouseCursors.click, 
+                    child: GestureDetector(
+                      onTap: () => _confirmDelete(index),
+                      child: Row(
+                        children: [
+                          Icon(Icons.delete, color: Color(0xFFF54949)),
+                          SizedBox(width: 4),
+                          Text(
+                            'Скасувати підписку',
+                            style: TextStyle(
+                              color: Color(0xFFF54949),
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   Spacer(),
@@ -114,62 +125,143 @@ Widget _buildSubscriptionCard(Subscription subscription, int index) {
               ),
             ),
             Spacer(),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children:[ 
-                Text(
-                  '${subscription.product.price.toStringAsFixed(0)} ₴',
-                  style: GoogleFonts.montserrat(fontSize: 28, fontWeight: FontWeight.w800, color: Color(0xFF333333)), 
-                ),
-                Text.rich(
-                  TextSpan(
-                    children: [
-                      TextSpan(
-                        text: 'раз на ',
-                        style: GoogleFonts.montserrat(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF333333)),
-                      ),
-                      TextSpan(
-                        text: subscription.periodInDays == 7
-                            ? 'тиждень'
-                            : subscription.periodInDays.toString(),
-                        style: GoogleFonts.montserrat(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFFC16AFF),
-                          decoration: TextDecoration.underline,
-                          decorationColor: Color(0xFFC16AFF), 
-                        ),
-                        recognizer: TapGestureRecognizer()
-                        ..onTap = () {
-                          showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              backgroundColor: Colors.white,
-                              title: Text('Деталі підписки'),
-                              content: Text('Це період доставки: ${subscription.periodInDays} днів'),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context),
-                                  child: Text('Закрити'),
-                                ),
-                              ],
-                              ),
-                            );
-                        }
-                      ),
-                    ],
+            Align(
+              alignment: Alignment.centerRight,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text(
+                    '${subscription.product.price.toStringAsFixed(0)} ₴',
+                    style: GoogleFonts.montserrat(
+                      fontSize: 28,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFF333333),
+                    ),
                   ),
-                ),
-              ],
+                  Text.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(
+                          text: 'раз на ',
+                          style: GoogleFonts.montserrat(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF333333),
+                          ),
+                        ),
+                        TextSpan(
+                          text: subscription.periodInDays == 7
+                              ? 'тиждень'
+                              : subscription.periodInDays.toString(),
+                          style: GoogleFonts.montserrat(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFFC16AFF),
+                            decoration: TextDecoration.underline,
+                            decorationColor: Color(0xFFC16AFF),
+                          ),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              showSubscriptionDetails(context, subscription);
+                            },
+                        ),
+                      ],
+                    ),
+                    textAlign: TextAlign.right,
+                  ),
+                ],
+              ),
             ),
             
           ],
         ),
-        Divider(height: 32)
+        SizedBox(height: 15),
+        Divider(height: 35)
       ],
     ),
   );
 }
+
+void showSubscriptionDetails(BuildContext context, Subscription subscription) {
+  int selectedPeriod = subscription.periodInDays;
+
+  showDialog(
+    context: context,
+    builder: (context) {
+      return StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            backgroundColor: Colors.white,
+            title: Center(
+              child: Text(
+                'Оформлення підписки',
+                style: TextStyle(
+                  color: Color(0xFF95C74E),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 32,
+                ),
+              ),
+            ),
+            content: SizedBox(
+              width: 500,
+              height: 480,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  RadioListTile<int>(
+                    activeColor: Color(0xFF95C74E),
+                    title: Text('Раз на тиждень', textAlign: TextAlign.center),
+                    value: 7,
+                    groupValue: selectedPeriod,
+                    onChanged: (val) => setState(() => selectedPeriod = val!),
+                  ),
+                  RadioListTile<int>(
+                    activeColor: Color(0xFF95C74E),
+                    title: Text('Раз на місяць', textAlign: TextAlign.center),
+                    value: 30,
+                    groupValue: selectedPeriod,
+                    onChanged: (val) => setState(() => selectedPeriod = val!),
+                  ),
+                  RadioListTile<int>(
+                    activeColor: Color(0xFF95C74E),
+                    title: Text('Раз в ${selectedPeriod == -1 ? subscription.periodInDays : selectedPeriod} днів', textAlign: TextAlign.center),
+                    value: -1,
+                    groupValue: selectedPeriod,
+                    onChanged: (val) => setState(() => selectedPeriod = val!),
+                  ),
+                  SizedBox(height: 20),
+                  Text(
+                    "Ми зв'яжемося з вами за день до закінчення терміну та обговоримо час доставки.",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 14, color: Colors.black87),
+                  ),
+                ],
+              ),
+            ),
+            actionsAlignment: MainAxisAlignment.center,
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text('Відмінити'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  print('Вибраний період: $selectedPeriod днів');
+                  Navigator.pop(context);
+                },
+                child: Text('Підтвердити'),
+              ),
+            ],
+          );
+        },
+      );
+    },
+  );
+}
+
+
 
 void _confirmDelete(int index) {
   final subscriptions = Provider.of<SubscriptionProvider>(context, listen: false).subscriptions;

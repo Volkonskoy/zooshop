@@ -372,7 +372,7 @@ class ProductCard extends StatelessWidget {
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(4),
         boxShadow: [
           BoxShadow(
             color: Colors.black26,
@@ -383,35 +383,24 @@ class ProductCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // Изображение продукта
-          SizedBox(height: 10),
+          
           Image.asset(
-            'assets/images/product.png', // Путь к изображению товара
+            'assets/images/product.png', 
             height: 120,
             fit: BoxFit.cover,
           ),
           SizedBox(height: 10),
-          // Название продукта
           Text(
-            'Brit Care Mono Protein',
+            'Brit Care Mono Protein вологий корм для собак 400 г - кролик',
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              fontSize: 16,
+              fontSize: 14,
             ),
             textAlign: TextAlign.center,
           ),
-          // Описание
-          Text(
-            'вологий корм для собак 400 г - кролик',
-            style: TextStyle(
-              color: Colors.grey,
-              fontSize: 12,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          // Цена
+        SizedBox(height: 75),
           Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Text(
                 '298 ₴',
@@ -431,23 +420,13 @@ class ProductCard extends StatelessWidget {
               ),
             ],
           ),
-          // Кнопка
           SizedBox(height: 10),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ProductPage(),
-                ),
-              );
-            },
+          SizedBox( 
+            width: 190,
+            child: ElevatedButton(
+            onPressed: () {},
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.purple, // Цвет кнопки
-              padding: EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 12,
-              ),
+              backgroundColor: Color(0xFF95C74E),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
@@ -457,13 +436,13 @@ class ProductCard extends StatelessWidget {
               style: TextStyle(color: Colors.white),
             ),
           ),
-          // Кнопка "Купить за 1 клик"
+          ),
           SizedBox(height: 10),
           TextButton(
             onPressed: () {},
             child: Text(
               'Купити за 1 клік',
-              style: TextStyle(color: Colors.purple),
+              style: TextStyle(color: Color(0xFF95C74E), fontSize: 14, fontWeight: FontWeight.w500),
             ),
           ),
         ],

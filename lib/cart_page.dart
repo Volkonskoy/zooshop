@@ -122,7 +122,6 @@ class _CartPageState extends State<CartPage> {
                       SizedBox(width: 8),
                       TextButton.icon(
                         onPressed: () {
-                          // повторне замовлення логіка
                         },
                         icon: Icon(Icons.refresh, color: Color(0xFF8DD048)),
                         label: Text(

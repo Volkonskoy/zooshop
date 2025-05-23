@@ -18,55 +18,56 @@ class AccountLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final maxWidthForOrders = screenWidth - 280; 
+    final maxWidthForOrders = screenWidth * (1 - 0.18);
     final ordersProvider = Provider.of<OrdersProvider>(context);
     final ordersAmount = ordersProvider.processingCount;
 
     return Scaffold(
-  backgroundColor: Colors.white,
-  body: SingleChildScrollView(
-    child: Center(
-      child: SizedBox(
-        width: 1200,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            HeaderBlock(),
-
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 75, vertical: 50, ),
+    backgroundColor: Colors.white,
+    body: SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Center(
+            child: SizedBox(
+              width: screenWidth * 0.82,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    activeMenu,
-                    style: GoogleFonts.montserrat(
-                      fontSize: 36,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF95C74E),
+                  HeaderBlock(),
+                  SizedBox(height: 10),
+                  Padding(
+                    padding: EdgeInsets.only(left: 50),
+                    child: Text(
+                      activeMenu,
+                      style: GoogleFonts.montserrat(
+                        fontSize: 36,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF95C74E),
+                      ),
                     ),
                   ),
                   SizedBox(height: 50),
-
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _menuItem(context, 'Обліковий запис', page: AccountPage(), isActive: activeMenu == 'Обліковий запис'),
-                          _menuItem(context, 'Адреса доставки', page: AddressPage(), isActive: activeMenu == 'Адреса доставки'),
-                          _menuItem(context, 'Історія замовлень', page: OrdersPage(), isActive: activeMenu == 'Історія замовлень', ordersAmount: ordersAmount),
-                          _menuItem(context, 'Підписки', page: SubscriptionPage(), isActive: activeMenu == 'Підписки'),
-                          _menuItem(context, 'Змінити пароль', page: ChangePasswordPage(), isActive: activeMenu == 'Змінити пароль'),
-                          _menuItem(context, 'Вийти', page: MainPage(), isActive: activeMenu == 'Вийти')
-
-                        ],
+                      Padding(
+                        padding: EdgeInsets.only(left: 50),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _menuItem(context, 'Обліковий запис', page: AccountPage(), isActive: activeMenu == 'Обліковий запис'),
+                            _menuItem(context, 'Адреса доставки', page: AddressPage(), isActive: activeMenu == 'Адреса доставки'),
+                            _menuItem(context, 'Історія замовлень', page: OrdersPage(), isActive: activeMenu == 'Історія замовлень', ordersAmount: ordersAmount),
+                            _menuItem(context, 'Підписки', page: SubscriptionPage(), isActive: activeMenu == 'Підписки'),
+                            _menuItem(context, 'Змінити пароль', page: ChangePasswordPage(), isActive: activeMenu == 'Змінити пароль'),
+                            _menuItem(context, 'Вийти', page: MainPage(), isActive: activeMenu == 'Вийти'),
+                          ],
+                        ),
                       ),
                       SizedBox(width: 35),
                       Container(width: 1, height: 408, color: Color(0xFFC8CBD0)),
                       SizedBox(width: 55),
-
                       if (activeMenu == 'Історія замовлень' || activeMenu == 'Підписки')
                         Expanded(
                           child: ConstrainedBox(
@@ -75,20 +76,22 @@ class AccountLayout extends StatelessWidget {
                           ),
                         )
                       else
-                        SizedBox(width: 365, child: child),
+                        SizedBox(width: screenWidth * 0.24, child: child),
                     ],
                   ),
+
+                  SizedBox(height: 77),
                 ],
               ),
             ),
-            SizedBox(height: 77),
-            FooterBlock(),
-          ],
-        ),
+          ),
+
+          FooterBlock(),
+        ],
       ),
     ),
-  ),
-);
+  );
+
 
   }
 

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:zooshop/account_layout.dart';
-import 'package:zooshop/cart_page.dart';
-import 'package:zooshop/order_placing_page.dart';
+
 
 
 class AccountPage extends StatelessWidget {
