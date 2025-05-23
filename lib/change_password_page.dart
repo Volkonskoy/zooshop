@@ -13,7 +13,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
 
   void _changePassword() {
     if (_formKey.currentState!.validate()) {
-      // Здесь логика смены пароля (например, API вызов)
+      
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Пароль успішно змінено')),
       );
