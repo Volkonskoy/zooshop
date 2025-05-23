@@ -27,7 +27,6 @@ Future<List<Product>> fetchProducts() async {
   final response = await http.get(Uri.parse('https://localhost:7097/api/Product'));
 
   if (response.statusCode == 200) {
-    // Если запрос успешный, парсим JSON
     List<dynamic> data = json.decode(response.body);
     return data.map((item) => Product.fromJson(item)).toList();
   } else {

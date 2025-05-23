@@ -3,10 +3,13 @@ import 'header.dart';
 import 'footer.dart';
 import 'package:zooshop/main.dart';
 import 'catalog.dart' as catalogPage;
+import 'models/Product.dart';
 
 
 class ProductPage extends StatelessWidget {
-  const ProductPage({super.key});
+    final Product product;
+
+  const ProductPage({super.key, required this.product});
 
   @override
   Widget build(BuildContext context) {

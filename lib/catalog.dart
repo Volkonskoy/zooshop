@@ -361,93 +361,125 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 200,
-      height: 400,
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black26,
-            blurRadius: 4,
-            offset: Offset(0, 2),
+    return InkWell(
+      borderRadius: BorderRadius.circular(4),
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ProductPage(product: product)),
+        );
+      },
+      child: Container(
+        constraints: BoxConstraints(
+          maxWidth: 220,
+          maxHeight: 480,
+        ),
+        padding: EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(4),
+          border: Border.all(
+            color: Colors.grey.shade300,
+            width: 0.5,
           ),
-        ],
-      ),
-      child: Column(
-        children: [
-          // Изображение продукта
-          SizedBox(height: 10),
-          Image.network(
-            product.image, // Используем URL изображения
-            height: 120,
-            fit: BoxFit.cover,
-          ),
-          SizedBox(height: 10),
-          // Название продукта
-          Text(
-            product.name,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          // Описание
-          Text(
-            product.desc,
-            style: TextStyle(
-              color: Colors.grey,
-              fontSize: 12,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          // Цена
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                '${product.price} ₴',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // Изображение товара
+            Container(
+              width: 190,
+              height: 190,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: Image.network(
+                  product.image,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => Icon(Icons.image_not_supported),
                 ),
+              ),
+            ),
+            SizedBox(height: 10),
+      
+            Text(
+              product.name,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+            ),
+            if (product.desc.isNotEmpty) ...[
+              SizedBox(height: 4),
+              Text(
+                product.desc,
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: 12,
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
             ],
-          ),
-          // Кнопка
-          SizedBox(height: 10),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ProductPage(),
+            Spacer(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(left: 8),
+                  child: Text(
+                    '${product.price} ₴',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 20,
+                    ),
+                  ),
                 ),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.purple, // Цвет кнопки
-              padding: EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 12,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+                // if (product.oldPrice != null) ...[
+                //   SizedBox(width: 8),
+                //   Text(
+                //     '${product.oldPrice} ₴',
+                //     style: TextStyle(
+                //       decoration: TextDecoration.lineThrough,
+                //       color: Colors.grey,
+                //       fontSize: 16,
+                //     ),
+                //   ),
+                // ]
+              ],
+            ),
+            SizedBox(height: 10),
+            SizedBox(
+              width: double.infinity,
+              height: 40,
+              child: ElevatedButton(
+                onPressed: () {
+               
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFF95C74E),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                ),
+                child: Text(
+                  'Купити',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ),
-            child: Text(
-              'Купити',
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-        ],
+            SizedBox(height: 15),
+            OneClickOrderText(),
+          ],
+        ),
       ),
     );
   }
 }
+
 
 
 class PaginationWidget extends StatefulWidget {
