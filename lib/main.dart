@@ -1,9 +1,46 @@
 import 'package:flutter/material.dart';
 import 'header.dart';
 import 'footer.dart';
+import 'package:provider/provider.dart';
+import 'package:zooshop/orders_page.dart';
+import 'package:zooshop/subscription_page.dart';
+
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider<OrdersProvider>(
+          create: (_) {
+            final provider = OrdersProvider();
+            provider.setOrders([
+              Order(state: "В обробці", quantity: 1),
+              Order(state: "В обробці", quantity: 5),
+              Order(state: "Доставлено"),
+              Order(state: "Скасовано"),
+              Order(state: "Доставлено"),
+              Order(state: "Доставлено"),
+              Order(state: "Скасовано", quantity: 8),
+
+            ]);
+            return provider;
+          },
+        ),
+        ChangeNotifierProvider<SubscriptionProvider>(
+          create: (_) {
+            final subscriptionProvider = SubscriptionProvider();
+            subscriptionProvider.loadFromDatabase([
+              Subscription(product: Product(id: 1, name: 'Savory Medium Breed сухий корм для собак 3 кг - індичка та ягня', price: 365, image: Image.asset('assets/images/image.png')), periodInDays: 7),
+              Subscription(product: Product(id: 2, name: 'Brit Care Mono Protein вологий корм для собак 400 г - кролик', price: 365, image: Image.asset('assets/images/image.png')), periodInDays: 7)
+
+            ]);
+            return subscriptionProvider;
+          }, 
+        ),
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -63,7 +100,7 @@ class PromoVetCard extends StatelessWidget {
       padding: EdgeInsets.all(50),
       height: 300,
       decoration: BoxDecoration(
-        color: Colors.lightGreenAccent, // Цвет фона
+        color: Color(0xFF95C74E),
         borderRadius: BorderRadius.circular(
           16,
         ), // Округлые углы
@@ -96,7 +133,7 @@ class PromoVetCard extends StatelessWidget {
                 onPressed: () {},
                 style: ElevatedButton.styleFrom(
                   backgroundColor:
-                      Colors.purple, // Цвет кнопки
+                      Color(0xFFC16AFF),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -139,7 +176,7 @@ class PromoConsultCard extends StatelessWidget {
       padding: EdgeInsets.all(50),
       height: 300,
       decoration: BoxDecoration(
-        color: Colors.orangeAccent, // Цвет фона
+        color: Colors.orangeAccent, 
         borderRadius: BorderRadius.circular(
           16,
         ), // Округлые углы
@@ -172,7 +209,7 @@ class PromoConsultCard extends StatelessWidget {
                 onPressed: () {},
                 style: ElevatedButton.styleFrom(
                   backgroundColor:
-                      Colors.green, // Цвет кнопки
+                      Color(0xFF95C74E),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -234,7 +271,7 @@ class SalesBlock extends StatelessWidget {
                   Text("Дивитись усе"),
                   Icon(
                     Icons.arrow_forward,
-                    color: Colors.green,
+                    color: Color(0xFF95C74E),
                   ),
                 ],
               ),
@@ -283,7 +320,7 @@ class NewsBlock extends StatelessWidget {
                   Text("Дивитись усе"),
                   Icon(
                     Icons.arrow_forward,
-                    color: Colors.green,
+                    color: Color(0xFF95C74E),
                   ),
                 ],
               ),
@@ -327,7 +364,6 @@ class ProductCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // Стикер скидки
           Align(
             alignment: Alignment.topLeft,
             child: Container(
@@ -336,7 +372,7 @@ class ProductCard extends StatelessWidget {
                 vertical: 4,
               ),
               decoration: BoxDecoration(
-                color: Colors.red,
+                color: Color(0xFFF54949),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
@@ -348,15 +384,13 @@ class ProductCard extends StatelessWidget {
               ),
             ),
           ),
-          // Изображение продукта
           SizedBox(height: 10),
           Image.asset(
-            'assets/images/product.png', // Путь к изображению товара
+            'assets/images/product.png', 
             height: 120,
             fit: BoxFit.cover,
           ),
           SizedBox(height: 10),
-          // Название продукта
           Text(
             'Brit Care Mono Protein',
             style: TextStyle(
@@ -365,7 +399,6 @@ class ProductCard extends StatelessWidget {
             ),
             textAlign: TextAlign.center,
           ),
-          // Описание
           Text(
             'вологий корм для собак 400 г - кролик',
             style: TextStyle(
@@ -374,7 +407,6 @@ class ProductCard extends StatelessWidget {
             ),
             textAlign: TextAlign.center,
           ),
-          // Цена
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -396,12 +428,11 @@ class ProductCard extends StatelessWidget {
               ),
             ],
           ),
-          // Кнопка
           SizedBox(height: 10),
           ElevatedButton(
             onPressed: () {},
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.purple, // Цвет кнопки
+              backgroundColor: Color(0xFFC16AFF),
               padding: EdgeInsets.symmetric(
                 horizontal: 20,
                 vertical: 12,
@@ -415,13 +446,12 @@ class ProductCard extends StatelessWidget {
               style: TextStyle(color: Colors.white),
             ),
           ),
-          // Кнопка "Купить за 1 клик"
           SizedBox(height: 10),
           TextButton(
             onPressed: () {},
             child: Text(
               'Купити за 1 клік',
-              style: TextStyle(color: Colors.purple),
+              style: TextStyle(color: Color(0xFFC16AFF)),
             ),
           ),
         ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zooshop/account_page.dart';
 import 'catalog.dart';
 import 'main.dart';
 
@@ -152,20 +153,22 @@ class LoginButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton.icon(
-      onPressed: () {},
+      onPressed: () {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => AccountPage()));
+      },
       icon: Icon(
-        Icons.person, // Иконка пользователя
+        Icons.person, 
         color: Colors.green,
       ),
       label: Text(
         'Log In/Sign In',
         style: TextStyle(
-          color: Colors.brown, // Цвет текста
+          color: Colors.brown, 
           fontWeight: FontWeight.bold,
         ),
       ),
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.white, // Белый фон
+        backgroundColor: Colors.white, 
         padding: EdgeInsets.symmetric(
           horizontal: 20,
           vertical: 12,
@@ -173,10 +176,10 @@ class LoginButton extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(
             30,
-          ), // Округлые углы
+          ), 
           side: BorderSide(
             color: Colors.grey,
-          ), // Рамка серого цвета
+          ), 
         ),
       ),
     );

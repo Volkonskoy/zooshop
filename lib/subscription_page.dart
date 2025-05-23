@@ -327,3 +327,4 @@ class SubscriptionProvider extends ChangeNotifier {
     notifyListeners();
   }
 }
+

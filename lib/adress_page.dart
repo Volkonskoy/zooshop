@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:zooshop/account_layout.dart';
 import 'package:zooshop/new_address_page.dart';
 
+
 class AddressPage extends StatefulWidget {
   @override
   _AddressPageState createState() => _AddressPageState();
@@ -35,8 +36,8 @@ class _AddressPageState extends State<AddressPage> {
                           onPressed: () {
                             _confirmDelete(index);
                           },
-                          icon: Icon(Icons.delete, color: Colors.red),
-                          label: Text('Видалити', style: TextStyle(color: Colors.red)),
+                          icon: Icon(Icons.delete, color: Color(0xFFF54949)),
+                          label: Text('Видалити', style: TextStyle(color: Color(0xFFF54949))),
                         ),
                       ],
                     ),
@@ -93,7 +94,9 @@ class _AddressPageState extends State<AddressPage> {
               child: Text('Додати нову адресу', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 16)),
             ),
             ),
+           
           ],
+          
         ),
       ),
     );

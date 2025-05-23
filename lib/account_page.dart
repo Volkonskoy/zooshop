@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:zooshopaccount_layout.dart';
+import 'package:zooshop/account_layout.dart';
 import 'package:zooshop/cart_page.dart';
 import 'package:zooshop/order_placing_page.dart';
-
 
 
 class AccountPage extends StatelessWidget {
@@ -20,7 +19,7 @@ class AccountPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-        
+   
             _labeledField('Ім’я', nameController),
             _labeledField('Прізвище', surnameController),
             _labeledField('Телефон', phoneController),
@@ -48,54 +47,7 @@ class AccountPage extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(
-              width: 140,
-              height: 40,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  minimumSize: Size(140, 40),
-                  backgroundColor: const Color(0xFFC16AFF),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(5), 
-                  ),
-                ),
-                onPressed: () {
-                  Navigator.pushReplacement(
-                context, MaterialPageRoute(builder: (_) => OrderPlacingPage()));},
-                child: Text(
-                  'Оформлення замовлення',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(
-              width: 140,
-              height: 40,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  minimumSize: Size(140, 40),
-                  backgroundColor: const Color(0xFFC16AFF),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(5), 
-                  ),
-                ),
-                onPressed: () {
-                  Navigator.pushReplacement(
-                context, MaterialPageRoute(builder: (_) => CartPage()));},
-                child: Text(
-                  'Кошик',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14
-                  ),
-                ),
-              ),
-            )
+            
           ],
         ),
       ),
