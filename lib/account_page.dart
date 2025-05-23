@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/pages/account_layout.dart';
-import 'package:flutter_application_1/pages/cart_page.dart';
-import 'package:flutter_application_1/pages/order_placing_page.dart';
+import 'package:zooshopaccount_layout.dart';
+import 'package:zooshop/cart_page.dart';
+import 'package:zooshop/order_placing_page.dart';
 
 
 
