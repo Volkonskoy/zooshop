@@ -356,11 +356,11 @@ class RecomendationBlock extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           spacing: 20,
           children: [
-            catalogPage.ProductCard(),
-            catalogPage.ProductCard(),
-            catalogPage.ProductCard(),
-            catalogPage.ProductCard(),
-            catalogPage.ProductCard()
+            //catalogPage.ProductCard(),
+            //catalogPage.ProductCard(),
+            //catalogPage.ProductCard(),
+            //catalogPage.ProductCard(),
+            //catalogPage.ProductCard()
           ],
         ),
       ],
