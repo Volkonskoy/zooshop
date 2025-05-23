@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_application_1/pages/account_layout.dart';
+import 'package:zooshop/account_layout.dart';
 
 class NewAddressPage extends StatefulWidget {
   @override
