@@ -126,7 +126,7 @@ class PromoVetCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Кошталтість сильно\n підвищиться!',
+                    'Кошталтість сильно\nпідвищиться!',
                     style: TextStyle(
                       fontSize: 40,
                       fontWeight: FontWeight.w800,
@@ -135,7 +135,7 @@ class PromoVetCard extends StatelessWidget {
                   ),
                   SizedBox(height: 10),
                   Text(
-                    'Знижка 20% на всі шампуні\n для кошенят.',
+                    'Знижка 20% на всі шампуні\nдля кошенят.',
                     style: TextStyle(
                       fontSize: 20,
                       color: Colors.white,
@@ -214,7 +214,7 @@ class PromoConsultCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Ми готові оказати вам\n підтримку в виборі',
+                    'Ми готові оказати вам\nпідтримку в виборі',
                     style: TextStyle(
                       fontSize: 40,
                       fontWeight: FontWeight.w800,
@@ -435,26 +435,29 @@ class ProductCard extends StatelessWidget {
           ),
         SizedBox(height: 75),
           Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                '298 ₴',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Padding(padding: EdgeInsets.only(left: 8),
+                 child:Text(
+                  '298 ₴',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 20,
+                  ),
                 ),
-              ),
-              SizedBox(width: 8),
-              Text(
-                '450 ₴',
-                style: TextStyle(
-                  decoration: TextDecoration.lineThrough,
-                  color: Colors.grey,
-                  fontSize: 14,
                 ),
-              ),
-            ],
-          ),
+               
+                SizedBox(width: 8),
+                Text(
+                  '450 ₴',
+                  style: TextStyle(
+                    decoration: TextDecoration.lineThrough,
+                    color: Colors.grey,
+                    fontSize: 16,
+                  ),
+                ),
+              ],
+            ),
           SizedBox(height: 10),
           SizedBox(
             width: double.infinity, 

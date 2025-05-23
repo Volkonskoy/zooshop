@@ -411,13 +411,16 @@ class ProductCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Text(
+                Padding(padding: EdgeInsets.only(left: 8),
+                 child:Text(
                   '298 ₴',
                   style: TextStyle(
                     fontWeight: FontWeight.w800,
                     fontSize: 20,
                   ),
                 ),
+                ),
+               
                 SizedBox(width: 8),
                 Text(
                   '450 ₴',

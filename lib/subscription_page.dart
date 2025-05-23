@@ -71,7 +71,7 @@ Widget _buildSubscriptionCard(Subscription subscription, int index) {
                           Icon(Icons.delete, color: Color(0xFFF54949)),
                           SizedBox(width: 4),
                           Text(
-                            'Скасувати підписку',
+                            'Скасувати',
                             style: TextStyle(
                               color: Color(0xFFF54949),
                               fontSize: 16,
@@ -85,39 +85,48 @@ Widget _buildSubscriptionCard(Subscription subscription, int index) {
                   Container(
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.grey.shade400),
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(5),
                     ),
-                    padding: EdgeInsets.symmetric(horizontal: 8),
                     child: Row(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        IconButton(
-                          icon: Icon(Icons.remove),
-                          onPressed: () {
-                            
-                          },
-                          iconSize: 20,
-                          constraints: BoxConstraints(),
-                          padding: EdgeInsets.zero,
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Color(0xFF95C74E),
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: IconButton(
+                            icon: Icon(Icons.remove, color: Colors.white),
+                            onPressed: () {},
+                            iconSize: 20,
+                            padding: EdgeInsets.all(4),
+                            constraints: BoxConstraints(),
+                          ),
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           child: Text(
-                            '1', 
-                            style: TextStyle(fontSize: 16),
+                            '1 шт',
+                            style: TextStyle(fontSize: 14),
                           ),
                         ),
-                        IconButton(
-                          icon: Icon(Icons.add),
-                          onPressed: () {
-                            
-                          },
-                          iconSize: 20,
-                          constraints: BoxConstraints(),
-                          padding: EdgeInsets.zero,
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Color(0xFF95C74E),
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: IconButton(
+                            icon: Icon(Icons.add, color: Colors.white),
+                            onPressed: () {},
+                            iconSize: 20,
+                            padding: EdgeInsets.all(4),
+                            constraints: BoxConstraints(),
+                          ),
                         ),
                       ],
                     ),
                   ),
+
                   ],
                 )
               
@@ -176,7 +185,7 @@ Widget _buildSubscriptionCard(Subscription subscription, int index) {
             
           ],
         ),
-        SizedBox(height: 15),
+        SizedBox(height: 10),
         Divider(height: 35)
       ],
     ),
@@ -193,66 +202,101 @@ void showSubscriptionDetails(BuildContext context, Subscription subscription) {
         builder: (context, setState) {
           return AlertDialog(
             backgroundColor: Colors.white,
-            title: Center(
-              child: Text(
-                'Оформлення підписки',
-                style: TextStyle(
-                  color: Color(0xFF95C74E),
-                  fontWeight: FontWeight.bold,
-                  fontSize: 32,
+            title: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Оформлення підписки',
+                  style: TextStyle(
+                    color: Color(0xFF95C74E),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 32,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-              ),
+                SizedBox(height: 21),
+                Text(
+                  'З якою періодичністю вам\nпривозити цей товар?',
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: Colors.black87,
+                    fontWeight: FontWeight.w700
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
             ),
+
             content: SizedBox(
-              width: 500,
-              height: 480,
+              width: 420,
+              height: 210,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   RadioListTile<int>(
                     activeColor: Color(0xFF95C74E),
-                    title: Text('Раз на тиждень', textAlign: TextAlign.center),
+                    title: Text('Раз на тиждень', textAlign: TextAlign.center, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),),
                     value: 7,
                     groupValue: selectedPeriod,
                     onChanged: (val) => setState(() => selectedPeriod = val!),
                   ),
                   RadioListTile<int>(
                     activeColor: Color(0xFF95C74E),
-                    title: Text('Раз на місяць', textAlign: TextAlign.center),
+                    title: Text('Раз на місяць', textAlign: TextAlign.center, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),),
                     value: 30,
                     groupValue: selectedPeriod,
                     onChanged: (val) => setState(() => selectedPeriod = val!),
                   ),
                   RadioListTile<int>(
                     activeColor: Color(0xFF95C74E),
-                    title: Text('Раз в ${selectedPeriod == -1 ? subscription.periodInDays : selectedPeriod} днів', textAlign: TextAlign.center),
+                    title: Text('Раз в ${selectedPeriod == -1 ? subscription.periodInDays : selectedPeriod} днів', textAlign: TextAlign.center, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),),
                     value: -1,
                     groupValue: selectedPeriod,
                     onChanged: (val) => setState(() => selectedPeriod = val!),
                   ),
                   SizedBox(height: 20),
-                  Text(
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 35),
+                    child: Text(
                     "Ми зв'яжемося з вами за день до закінчення терміну та обговоримо час доставки.",
-                    textAlign: TextAlign.center,
+                    textAlign: TextAlign.start,
                     style: TextStyle(fontSize: 14, color: Colors.black87),
                   ),
+                  )
+                  
                 ],
               ),
             ),
             actionsAlignment: MainAxisAlignment.center,
             actions: [
-              TextButton(
+              OutlinedButton(
                 onPressed: () => Navigator.pop(context),
-                child: Text('Відмінити'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Color(0xFFC16AFF),
+                  side: BorderSide(color: Color(0xFFC16AFF)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5), 
+                  ),
+                ),
+                child: Text('Скасувати', style: TextStyle(fontSize: 16)),
               ),
               ElevatedButton(
                 onPressed: () {
                   print('Вибраний період: $selectedPeriod днів');
                   Navigator.pop(context);
                 },
-                child: Text('Підтвердити'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFFC16AFF),
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5), 
+                  ),
+                ),
+                child: Text('Підтвердити', style: TextStyle(fontSize: 16),),
               ),
+            SizedBox(height: 50)
+
             ],
           );
         },

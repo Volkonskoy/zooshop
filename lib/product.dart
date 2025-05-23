@@ -2,43 +2,42 @@ import 'package:flutter/material.dart';
 import 'header.dart';
 import 'footer.dart';
 import 'package:zooshop/main.dart';
+import 'catalog.dart' as catalogPage;
+
 
 class ProductPage extends StatelessWidget {
   const ProductPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
-        child: Center(
-          child: SizedBox(
-            width: 1300,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: SizedBox(
-                    width: 1200,
-                    child: HeaderBlock(),
-                  ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: SizedBox(
+                width: screenWidth * (1 - 0.18),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    HeaderBlock(),
+                    SizedBox(height: 20),
+                    ProductBlock(),
+                    SizedBox(height: 30),
+                    DetailBlock(),
+                    SizedBox(height: 100),
+                    RecomendationBlock(),
+                    SizedBox(height: 70),
+                  ],
                 ),
-                SizedBox(height: 20),
-                ProductBlock(),
-                SizedBox(height: 30),
-                DetailBlock(),
-                SizedBox(height: 60,),
-                RecomendationBlock(),
-                SizedBox(height: 70),
-                Center(
-                  child: SizedBox(
-                    width: 1200,
-                    child: FooterBlock(),
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
+            FooterBlock(),
+          ],
         ),
       ),
     );
@@ -51,7 +50,7 @@ class ProductBlock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Image(
@@ -181,25 +180,47 @@ class PriceCard extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(
-            "$newPrice ₴",
-            style: TextStyle(
-              color: Color(0xFFF54949),
-              fontSize: 24,
-              fontWeight: FontWeight.w900,
-            ),
+          Row(
+            children: [
+              Container(
+                padding: EdgeInsets.only(left: 40),
+                child: Text(
+                  "$newPrice ₴",
+                  style: TextStyle(
+                    color: Color(0xFFF54949),
+                    fontSize: 24,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ),
+              Spacer(),
+              Container(
+                padding: EdgeInsets.only(right: 40),
+                child: Text(
+                  "$oldPrice ₴",
+                  style: TextStyle(
+                    color: Color(0xFF848992),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w900,
+                    decoration: TextDecoration.lineThrough,
+                  ),
+                ),
+              ),
+            ],
           ),
+
           SizedBox(height: 10),
           Container(
             padding: EdgeInsets.symmetric(horizontal: 27),
             width: double.infinity,
             height: 40,
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Color(0xFF95C74E),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(5), 
+                  borderRadius: BorderRadius.circular(5),
                 ),
               ),
               child: Text(
@@ -217,52 +238,63 @@ class PriceCard extends StatelessWidget {
               onPressed: () {
                 showDialog(
                   context: context,
-                  builder: (context) => OneClickOrderDialog(), 
+                  builder: (context) => OneClickOrderDialog(),
                 );
               },
               style: OutlinedButton.styleFrom(
-                side: BorderSide(color: Color(0xFF95C74E)), 
+                side: BorderSide(color: Color(0xFF95C74E)),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(5),
                 ),
-                foregroundColor: Color(0xFF95C74E), 
+                foregroundColor: Color(0xFF95C74E),
               ),
               child: Text("Купити в один клік"),
             ),
           ),
-
         ],
       ),
     );
   }
 }
 
-class DetailBlock extends StatelessWidget {
+
+class DetailBlock extends StatefulWidget {
   const DetailBlock({super.key});
 
   @override
+  State<DetailBlock> createState() => _DetailBlockState();
+}
+
+class _DetailBlockState extends State<DetailBlock> {
+  int selectedIndex = 0; 
+
+  final descriptionText = "Корм для британських короткошерстих котів створений з урахуванням особливостей цієї породи. Кремезні та сильні тварини потребують раціону, який дасть змогу зміцнити їхні суглоби та підтримає роботу серця. Застосування british shorthair adult знижує ризик серцевих захворювань. Кількість жирів обмежена.";
+
+  final characteristicsText = "• Вага: 400 г\n• Вік: дорослі коти\n• Смак: кролик\n• Особливості: знижений рівень жирів, підтримка серця та суглобів";
+
+  @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Center(
       child: SizedBox(
-        width: 1000,
+        width: screenWidth * (1 - 0.18),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "Опис",
-              style: TextStyle(
-                color: Colors.purpleAccent,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+            Row(
+              children: [
+                _buildTab("Опис", 0),
+                _buildTab("Характеристики", 1),
+              ],
             ),
-            SizedBox(height: 10),
-            Divider(height: 1.0, color: Colors.grey),
-            SizedBox(height: 10),
+            Divider(height: 1, color: Colors.grey),
+            SizedBox(height: 20),
             SizedBox(
               width: 600,
               child: Text(
-                "Корм для британських короткошерстих котів створений з урахуванням особливостей цієї породи. Кремезні та сильні тварини потребують раціону, який дасть змогу зміцнити їхні суглоби та підтримає роботу серця. Застосування british shorthair adult знижує ризик серцевих захворювань. Кількість жирів обмежена.",
+                selectedIndex == 0 ? descriptionText : characteristicsText,
+                style: TextStyle(fontSize: 16, color: Colors.black87),
               ),
             ),
           ],
@@ -270,7 +302,39 @@ class DetailBlock extends StatelessWidget {
       ),
     );
   }
+
+  Widget _buildTab(String text, int index) {
+    final isSelected = selectedIndex == index;
+
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          selectedIndex = index;
+        });
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: isSelected ? Colors.purpleAccent : Colors.transparent,
+              width: 3,
+            ),
+          ),
+        ),
+        child: Text(
+          text,
+          style: TextStyle(
+            color: isSelected ? Colors.purpleAccent : Colors.grey[700],
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            fontSize: 20,
+          ),
+        ),
+      ),
+    );
+  }
 }
+
 
 class RecomendationBlock extends StatelessWidget {
   const RecomendationBlock({super.key});
@@ -278,6 +342,7 @@ class RecomendationBlock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           "Рекомендовані товари",
@@ -286,15 +351,16 @@ class RecomendationBlock extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-        SizedBox(height: 20,),
+        SizedBox(height: 56),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          spacing: 30,
+          spacing: 20,
           children: [
-            ProductCard(),
-            ProductCard(),
-            ProductCard(),
-            ProductCard(),
+            catalogPage.ProductCard(),
+            catalogPage.ProductCard(),
+            catalogPage.ProductCard(),
+            catalogPage.ProductCard(),
+            catalogPage.ProductCard()
           ],
         ),
       ],
