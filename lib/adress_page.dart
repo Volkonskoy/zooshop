@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/pages/account_layout.dart';
-import 'package:flutter_application_1/pages/new_address_page.dart';
+import 'package:zooshop/account_layout.dart';
+import 'package:zooshop/new_address_page.dart';
 
 class AddressPage extends StatefulWidget {
   @override
