@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/pages/account_page.dart';
-import 'package:flutter_application_1/pages/adress_page.dart';
-import 'package:flutter_application_1/pages/change_password_page.dart';
-import 'package:flutter_application_1/pages/orders_page.dart';
-import 'package:flutter_application_1/pages/subscription_page.dart';
+import 'package:zooshop/account_page.dart';
+import 'package:zooshop/adress_page.dart';
+import 'package:zooshop/change_password_page.dart';
+import 'package:zooshop/orders_page.dart';
+import 'package:zooshop/subscription_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
