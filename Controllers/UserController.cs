@@ -14,10 +14,10 @@ namespace Zooshop.Controllers
             db = context; //Создаём экземпляр дб контекста для операций с бд
         }
 
-        [HttpGet("{Email}")]
-        public IActionResult Get(String Email)
+        [HttpGet("{Email}, {Password}")]
+        public IActionResult Get(String Email, String Password)
         {
-            var user = db.Users.SingleOrDefault(u => u.Email == Email);
+            var user = db.Users.SingleOrDefault(u => u.Email == Email && u.Password == Password);
 
             if (user == null) { return NotFound(); }
             return Ok(user);
