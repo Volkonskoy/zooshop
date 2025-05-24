@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:zooshop/account_layout.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-
+import 'auth_service.dart';
+import 'package:zooshop/models/Order.dart';
 
 class OrdersPage extends StatefulWidget {
   @override
@@ -12,44 +13,63 @@ class OrdersPage extends StatefulWidget {
 class _OrdersPageState extends State<OrdersPage> {
   int _currentPage = 0;
   final int _ordersPerPage = 5;
+  List<OrderDTO> orders = [];
 
- @override
-Widget build(BuildContext context) {
-  final orders = context.watch<OrdersProvider>().orders;
+  @override
+  Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final user = authProvider.user;
 
-  final totalPages = (orders.length / _ordersPerPage).ceil();
-  final startIndex = _currentPage * _ordersPerPage;
-  final endIndex = (_currentPage + 1) * _ordersPerPage;
-  final currentOrders = orders.sublist(
-    startIndex,
-    endIndex > orders.length ? orders.length : endIndex,
-  );
+    if (user == null || user.id == null) {
+      return Scaffold(
+        body: Center(child: Text('Користувач не авторизований')),
+      );
+    }
 
-  return AccountLayout(
-    activeMenu: 'Історія замовлень',
-      child: Container(
-        padding: EdgeInsets.all(16),
-        child: SingleChildScrollView( 
-        child: Column(
-          children: [
-            ...currentOrders
-                .asMap()
-                .entries
-                .map((entry) => _buildOrderCard(entry.value, entry.key))
-                .toList(),
+    return FutureBuilder<List<OrderDTO>>(
+      future: fetchOrdersByUserId(user.id!),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Scaffold(body: Center(child: CircularProgressIndicator()));
+        }
 
-            SizedBox(height: 24),
+        if (snapshot.hasError) {
+          return Scaffold(body: Center(child: Text('Помилка: ${snapshot.error}')));
+        }
 
-            _buildPagination(totalPages),
-          ],
-        ),
-        )
-      ),
+        orders = snapshot.data ?? [];
+        final totalPages = (orders.length / _ordersPerPage).ceil();
+        final startIndex = _currentPage * _ordersPerPage;
+        final endIndex = (_currentPage + 1) * _ordersPerPage;
+        final currentOrders = orders.sublist(
+          startIndex,
+          endIndex > orders.length ? orders.length : endIndex,
+        );
+
+        return AccountLayout(
+          activeMenu: 'Історія замовлень',
+          child: Container(
+            padding: EdgeInsets.all(16),
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  ...currentOrders
+                      .asMap()
+                      .entries
+                      .map((entry) => _buildOrderCard(entry.value, entry.key))
+                      .toList(),
+                  SizedBox(height: 24),
+                  _buildPagination(totalPages),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 
   void _confirmDelete(int index) {
-  final orders = Provider.of<OrdersProvider>(context, listen: false).orders;
 
   showDialog(
     context: context,
@@ -111,9 +131,9 @@ Widget build(BuildContext context) {
                         height: 40,
                         child: ElevatedButton(
                           onPressed: () {
-                            setState(() {
-                              orders.elementAt(index).state = 'Скасовано';
-                            });
+                            // setState(() {
+                            //   orders.elementAt(index).state = 'Скасовано';
+                            // });
                             Navigator.pop(context);
                           },
                           style: ElevatedButton.styleFrom(
@@ -151,9 +171,9 @@ Widget build(BuildContext context) {
     );
   }
 
-  Widget _buildOrderCard(Order order, int index) {
+  Widget _buildOrderCard(OrderDTO order, int index) {
     Color statusColor;
-    final isCancellable = order.state == 'В обробці';
+    final isCancellable = order.state == 'В обробці' || order.state == 'Не оплачен';
     final canReorder = order.state == 'Скасовано' || order.state == 'Доставлено';
 
     switch (order.state) {
@@ -181,9 +201,9 @@ Widget build(BuildContext context) {
                 text: TextSpan(
                   style: GoogleFonts.montserrat(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF333333)),
                   children: [
-                    TextSpan(text: order.name + '  '),
+                    TextSpan(text: 'Замовлення від  ' + order.date),
                     TextSpan(
-                      text: '№${order.number}',
+                      text: '№${order.id}',
                       style: TextStyle(
                         fontWeight: FontWeight.normal,
                         color: Color(0xFF848992),
@@ -204,12 +224,12 @@ Widget build(BuildContext context) {
               ),
               SizedBox(width: 24),
               Text(
-                '${order.quantity} товари',
+                '${countItemsInOrder(order.orderId)} товари',
                 style: TextStyle(fontSize: 14),
               ),
               SizedBox(width: 24),
               Text(
-                '${order.sum.toStringAsFixed(0)} ₴',
+                '${totalCost()} ₴',
                 style: TextStyle(fontWeight: FontWeight.w900, fontSize: 20),
               ),
             ],
@@ -238,6 +258,25 @@ Widget build(BuildContext context) {
       ],
       ),
     );
+  }
+
+  int countItemsInOrder(int orderId ) {
+    return orders.where((order) => order.orderId == orderId).length;
+  }
+
+  int totalCost(){
+    int total = 0;
+    
+    for (var order in orders) {
+      int quantity = 1; 
+      // if (cartItem.quantity != null) {
+      //   quantity = cartItem.quantity;
+      // }
+
+      total += order.product.price * quantity;
+    }
+    
+    return total;
   }
 
   Widget _buildPagination(int totalPages) {
@@ -295,7 +334,7 @@ Widget build(BuildContext context) {
 }
 
 
-  void _confirmReorder(Order order) {
+  void _confirmReorder(OrderDTO order) {
     showDialog(
       context: context,
       builder: (context) => Dialog(
@@ -309,7 +348,7 @@ Widget build(BuildContext context) {
             children: [
               SizedBox(height: 30),
               Text(
-                'Додати товари від "${order.name}" до кошика?',
+                'Додати товари від "Замовлення від ${order.date}" до кошика?',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Color(0xFF333333), 
@@ -390,21 +429,21 @@ class Order {
   }) : name = name ?? "Замовлення від ${DateTime.now().toIso8601String().split('T')[0]}";
 }
 
-class OrdersProvider with ChangeNotifier {
-  List<Order> _orders = [];
+// class OrdersProvider with ChangeNotifier {
+//   List<Order> _orders = [];
 
-  List<Order> get orders => _orders;
+//   List<Order> get orders => _orders;
 
-  int get processingCount =>
-      _orders.where((o) => o.state == 'В обробці').length;
+//   int get processingCount =>
+//       _orders.where((o) => o.state == 'В обробці').length;
 
-  void setOrders(List<Order> orders) {
-    _orders = orders;
-    notifyListeners();
-  }
+//   void setOrders(List<Order> orders) {
+//     _orders = orders;
+//     notifyListeners();
+//   }
 
-  void cancelOrder(int index) {
-    _orders[index].state = 'Скасовано';
-    notifyListeners();
-  }
-}
+//   void cancelOrder(int index) {
+//     _orders[index].state = 'Скасовано';
+//     notifyListeners();
+//   }
+// }

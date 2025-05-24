@@ -12,22 +12,7 @@ void main() {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider<OrdersProvider>(
-          create: (_) {
-            final provider = OrdersProvider();
-            provider.setOrders([
-              Order(state: "В обробці", quantity: 1),
-              Order(state: "В обробці", quantity: 5),
-              Order(state: "Доставлено"),
-              Order(state: "Скасовано"),
-              Order(state: "Доставлено"),
-              Order(state: "Доставлено"),
-              Order(state: "Скасовано", quantity: 8),
-
-            ]);
-            return provider;
-          },
-        ),
+       
         ChangeNotifierProvider<SubscriptionProvider>(
           create: (_) {
             final subscriptionProvider = SubscriptionProvider();

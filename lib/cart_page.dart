@@ -14,7 +14,7 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPageState extends State<CartPage> {
-  
+  List<Cart> cartItems = [];
 
   @override
 Widget build(BuildContext context) {
@@ -43,7 +43,7 @@ Widget build(BuildContext context) {
         );
       }
 
-      final cartItems = snapshot.data ?? [];
+      cartItems = snapshot.data ?? [];
 
       return Scaffold(
         backgroundColor: Colors.white,
@@ -91,7 +91,7 @@ Widget build(BuildContext context) {
                               ),
                             ),
                             SizedBox(width: 50),
-                            _buildSummaryBlock(),
+                            _buildSummaryBlock(totalCost()),
                           ],
                         ),
                       ),
@@ -108,8 +108,6 @@ Widget build(BuildContext context) {
     },
   );
 }
-
-
 
     
   Widget _buildCartItem(Cart cartItem, int index) {
@@ -150,8 +148,7 @@ Widget build(BuildContext context) {
                   ),
                   SizedBox(height: 25),
 
-                  // Комментируем блок с quantity
-                  /*
+                
                   Row(
                     children: [
                       TextButton.icon(
@@ -167,63 +164,62 @@ Widget build(BuildContext context) {
                               color: Color(0xFFF54949), fontSize: 16),
                         ),
                       ),
-                      SizedBox(width: 8),
-                      TextButton.icon(
-                        onPressed: () {
-                          makeSubscription(context);
-                        },
-                        icon: Icon(Icons.refresh, color: Color(0xFF8DD048)),
-                        label: Text(
-                          'Замовляти повторно',
-                          style: TextStyle(
-                              color: Color(0xFF8DD048), fontSize: 16),
-                        ),
-                      ),
-                      Spacer(),
-                      Container(
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey.shade400),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        padding: EdgeInsets.symmetric(horizontal: 8),
-                        child: Row(
-                          children: [
-                            IconButton(
-                              icon: Icon(Icons.remove),
-                              onPressed: () {
-                                setState(() {
-                                  if (item.quantity > 1) item.quantity--;
-                                });
-                              },
-                              iconSize: 20,
-                              constraints: BoxConstraints(),
-                              padding: EdgeInsets.zero,
-                            ),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 8.0),
-                              child: Text(
-                                '${item.quantity}',
-                                style: TextStyle(fontSize: 16),
-                              ),
-                            ),
-                            IconButton(
-                              icon: Icon(Icons.add),
-                              onPressed: () {
-                                setState(() {
-                                  item.quantity++;
-                                });
-                              },
-                              iconSize: 20,
-                              constraints: BoxConstraints(),
-                              padding: EdgeInsets.zero,
-                            ),
-                          ],
-                        ),
-                      ),
+                      // SizedBox(width: 8),
+                      // TextButton.icon(
+                      //   onPressed: () {
+                      //     makeSubscription(context);
+                      //   },
+                      //   icon: Icon(Icons.refresh, color: Color(0xFF8DD048)),
+                      //   label: Text(
+                      //     'Замовляти повторно',
+                      //     style: TextStyle(
+                      //         color: Color(0xFF8DD048), fontSize: 16),
+                      //   ),
+                      // ),
+                      // Spacer(),
+                      // Container(
+                      //   decoration: BoxDecoration(
+                      //     border: Border.all(color: Colors.grey.shade400),
+                      //     borderRadius: BorderRadius.circular(8),
+                      //   ),
+                      //   padding: EdgeInsets.symmetric(horizontal: 8),
+                      //   child: Row(
+                      //     children: [
+                      //       IconButton(
+                      //         icon: Icon(Icons.remove),
+                      //         onPressed: () {
+                      //           setState(() {
+                      //             if (item.quantity > 1) item.quantity--;
+                      //           });
+                      //         },
+                      //         iconSize: 20,
+                      //         constraints: BoxConstraints(),
+                      //         padding: EdgeInsets.zero,
+                      //       ),
+                      //       Padding(
+                      //         padding:
+                      //             const EdgeInsets.symmetric(horizontal: 8.0),
+                      //         child: Text(
+                      //           '${item.quantity}',
+                      //           style: TextStyle(fontSize: 16),
+                      //         ),
+                      //       ),
+                      //       IconButton(
+                      //         icon: Icon(Icons.add),
+                      //         onPressed: () {
+                      //           setState(() {
+                      //             item.quantity++;
+                      //           });
+                      //         },
+                      //         iconSize: 20,
+                      //         constraints: BoxConstraints(),
+                      //         padding: EdgeInsets.zero,
+                      // //       ),
+                      //     ],
+                      //   ),
+                      // ),
                     ],
                   ),
-                  */
 
                   // Комментируем блок с available
                   /*
@@ -277,6 +273,20 @@ Widget build(BuildContext context) {
     ),
   );
 }
+int totalCost(){
+  int total = 0;
+  
+  for (var cartItem in cartItems) {
+    int quantity = 1; 
+    // if (cartItem.quantity != null) {
+    //   quantity = cartItem.quantity;
+    // }
+
+    total += cartItem.product.price * quantity;
+  }
+  
+  return total;
+}
 
 }
 
@@ -298,7 +308,7 @@ Widget build(BuildContext context) {
 //   });
 // }
 
-Widget _buildSummaryBlock() {
+Widget _buildSummaryBlock(int totalCost) {
   return Container(
     width: 350,
     padding: EdgeInsets.all(24),
@@ -328,13 +338,16 @@ Widget _buildSummaryBlock() {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text("Разом", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-            Text("6890 ₴", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+            Text('${totalCost} ₴', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
           ],
         )
       ],
     ),
   );
 }
+
+
+
 void makeSubscription(BuildContext context) {
   int selectedPeriod = 7;
 

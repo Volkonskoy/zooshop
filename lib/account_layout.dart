@@ -10,92 +10,118 @@ import 'package:provider/provider.dart';
 import 'header.dart';
 import 'footer.dart';
 import 'auth_service.dart';
+import 'package:zooshop/models/Order.dart';
 
 
-class AccountLayout extends StatelessWidget {
+class AccountLayout extends StatefulWidget {
   final Widget child;
   final String activeMenu;
+
   const AccountLayout({required this.child, required this.activeMenu, super.key});
+
+  @override
+  State<AccountLayout> createState() => _AccountLayoutState();
+}
+
+class _AccountLayoutState extends State<AccountLayout> {
+  int ordersAmount = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadOrders();
+  }
+
+  Future<void> _loadOrders() async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final user = authProvider.user;
+
+    if (user != null) {
+      try {
+        List<OrderDTO> orders = await fetchOrdersByUserId(user.id!);
+        setState(() {
+          ordersAmount = orders.where((o) => o.state != 'Скасовано').length;
+        });
+      } catch (e) {
+        print("Error fetching orders: $e");
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final maxWidthForOrders = screenWidth * (1 - 0.18);
-    final ordersProvider = Provider.of<OrdersProvider>(context);
-    final ordersAmount = ordersProvider.processingCount;
 
     return Scaffold(
-    backgroundColor: Colors.white,
-    body: SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Center(
-            child: SizedBox(
-              width: screenWidth * 0.82,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  HeaderBlock(),
-                  SizedBox(height: 10),
-                  Padding(
-                    padding: EdgeInsets.only(left: 20, top: 20),
-                    child: Text(
-                      activeMenu,
-                      style: GoogleFonts.montserrat(
-                        fontSize: 36,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF95C74E),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 50),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(left: 20),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _menuItem(context, 'Обліковий запис', page: AccountPage(), isActive: activeMenu == 'Обліковий запис'),
-                            _menuItem(context, 'Адреса доставки', page: AddressPage(), isActive: activeMenu == 'Адреса доставки'),
-                            _menuItem(context, 'Історія замовлень', page: OrdersPage(), isActive: activeMenu == 'Історія замовлень', ordersAmount: ordersAmount),
-                            _menuItem(context, 'Підписки', page: SubscriptionPage(), isActive: activeMenu == 'Підписки'),
-                            _menuItem(context, 'Змінити пароль', page: ChangePasswordPage(), isActive: activeMenu == 'Змінити пароль'),
-                            _menuItem(context, 'Вийти', page: MainPage(), isActive: activeMenu == 'Вийти'),
-                          ],
+      backgroundColor: Colors.white,
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Center(
+              child: SizedBox(
+                width: screenWidth * 0.82,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    HeaderBlock(),
+                    SizedBox(height: 10),
+                    Padding(
+                      padding: EdgeInsets.only(left: 20, top: 20),
+                      child: Text(
+                        widget.activeMenu,
+                        style: GoogleFonts.montserrat(
+                          fontSize: 36,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF95C74E),
                         ),
                       ),
-                      SizedBox(width: 35),
-                      Container(width: 1, height: 408, color: Color(0xFFC8CBD0)),
-                      SizedBox(width: 55),
-                      if (activeMenu == 'Історія замовлень' || activeMenu == 'Підписки')
-                        Expanded(
-                          child: ConstrainedBox(
-                            constraints: BoxConstraints(maxWidth: maxWidthForOrders),
-                            child: child,
+                    ),
+                    SizedBox(height: 50),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(left: 20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _menuItem(context, 'Обліковий запис', page: AccountPage(), isActive: widget.activeMenu == 'Обліковий запис'),
+                              _menuItem(context, 'Адреса доставки', page: AddressPage(), isActive: widget.activeMenu == 'Адреса доставки'),
+                              _menuItem(context, 'Історія замовлень', page: OrdersPage(), isActive: widget.activeMenu == 'Історія замовлень', ordersAmount: ordersAmount),
+                              _menuItem(context, 'Підписки', page: SubscriptionPage(), isActive: widget.activeMenu == 'Підписки'),
+                              _menuItem(context, 'Змінити пароль', page: ChangePasswordPage(), isActive: widget.activeMenu == 'Змінити пароль'),
+                              _menuItem(context, 'Вийти', page: MainPage(), isActive: widget.activeMenu == 'Вийти'),
+                            ],
                           ),
-                        )
-                      else
-                        SizedBox(width: screenWidth * 0.24, child: child),
-                    ],
-                  ),
-
-                  SizedBox(height: 77),
-                ],
+                        ),
+                        SizedBox(width: 35),
+                        Container(width: 1, height: 408, color: Color(0xFFC8CBD0)),
+                        SizedBox(width: 55),
+                        if (widget.activeMenu == 'Історія замовлень' || widget.activeMenu == 'Підписки')
+                          Expanded(
+                            child: ConstrainedBox(
+                              constraints: BoxConstraints(maxWidth: maxWidthForOrders),
+                              child: widget.child,
+                            ),
+                          )
+                        else
+                          SizedBox(width: screenWidth * 0.24, child: widget.child), // ✅
+                      ],
+                    ),
+                    SizedBox(height: 77),
+                  ],
+                ),
               ),
             ),
-          ),
-
-          FooterBlock(),
-        ],
+            FooterBlock(),
+          ],
+        ),
       ),
-    ),
-  );
-
-
+    );
   }
+
 
   Widget _menuItem( BuildContext context, String title, { Widget? page, bool isActive = false, int ordersAmount = 0,}) {
     bool isOrders = title == 'Історія замовлень';
