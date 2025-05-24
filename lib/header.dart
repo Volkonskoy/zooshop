@@ -383,8 +383,7 @@ class _RegisterDialogState extends State<RegisterDialog> {
     try {
       if (_isLoginMode) {
        UserDTO loggedUser = await fetchUserByUserEmail(email, password);
-       addUser(loggedUser);
-          Provider.of<AuthProvider>(context, listen: false).login(user: loggedUser);
+        Provider.of<AuthProvider>(context, listen: false).login(user: loggedUser);
       } else {
         _register();
       }

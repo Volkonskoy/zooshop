@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'header.dart';
 import 'footer.dart';
+import 'auth_service.dart';
+import 'package:zooshop/models/Cart.dart';
+import 'package:zooshop/models/Product.dart';
+import 'package:provider/provider.dart';
+
 
 class CartPage extends StatefulWidget {
   @override
@@ -9,99 +14,109 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPageState extends State<CartPage> {
-  List<CartItem> cartItems = [
-    CartItem(
-      name: 'Savory Medium Breed сухий корм для собак 3 кг - індичка та ягня',
-      price: 365,
-      oldPrice: 450,
-      imageAsset: 'assets/images/image.png',
-      available: false,
-    ),
-    CartItem(
-      name: 'Brit Care Mono Protein вологий корм для собак 400 г - кролик',
-      price: 298,
-      imageAsset: 'assets/images/image2.png',
-    ),
-    CartItem(
-      name: 'Сухий корм для дорослих собак усіх порід Carnilove True Fresh',
-      price: 365,
-      oldPrice: 450,
-      imageAsset: 'assets/images/image3.png',
-    ),
-    CartItem(
-      name: 'Іграшка для гризуна морквина 10 см - натуральні матеріали',
-      price: 189,
-      imageAsset: 'assets/images/image4.png',
-    ),
-  ];
+  
 
   @override
-  Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
+Widget build(BuildContext context) {
+  final authProvider = Provider.of<AuthProvider>(context, listen: false);
+  final user = authProvider.user;
+  final screenWidth = MediaQuery.of(context).size.width;
+
+  if (user == null || user.id == null) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Center(
-              child: SizedBox(
-                width: screenWidth * 0.82,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    HeaderBlock(), 
-                    SizedBox(height: 10),
-
-                    Padding(
-                      padding: EdgeInsets.only(left: 20, top: 20),
-                      child: Text(
-                        "Кошик",
-                        style: GoogleFonts.montserrat(
-                          fontSize: 36,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF95C74E),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 50),
-
-                    Padding(
-                      padding: EdgeInsets.only(bottom: 50),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                ...cartItems.asMap().entries.map((entry) => _buildCartItem(entry.value, entry.key)).toList()
-                              ],
-                            ),
-                          ),
-                          SizedBox(width: 50),
-                          _buildSummaryBlock(),
-                        ],
-                      ),
-                    ),
-
-                    SizedBox(height: 77),
-                  ],
-                ),
-              ),
-            ),
-
-            FooterBlock(), 
-          ],
-        ),
-      ),
+      body: Center(child: Text('Користувач не авторизований')),
     );
   }
 
+  return FutureBuilder<List<Cart>>(
+    future: fetchCartsByUserId(user.id!),
+    builder: (context, snapshot) {
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return Scaffold(
+          body: Center(child: CircularProgressIndicator()),
+        );
+      }
+
+      if (snapshot.hasError) {
+        return Scaffold(
+          body: Center(child: Text('Помилка: ${snapshot.error}')),
+        );
+      }
+
+      final cartItems = snapshot.data ?? [];
+
+      return Scaffold(
+        backgroundColor: Colors.white,
+        body: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Center(
+                child: SizedBox(
+                  width: screenWidth * 0.82,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      HeaderBlock(),
+                      SizedBox(height: 10),
+
+                      Padding(
+                        padding: EdgeInsets.only(left: 20, top: 20),
+                        child: Text(
+                          "Кошик",
+                          style: GoogleFonts.montserrat(
+                            fontSize: 36,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF95C74E),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 50),
+
+                      Padding(
+                        padding: EdgeInsets.only(bottom: 50),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: cartItems.isNotEmpty
+                                    ? cartItems
+                                        .asMap()
+                                        .entries
+                                        .map((entry) => _buildCartItem(entry.value, entry.key))
+                                        .toList()
+                                    : [Text('Кошик порожній')],
+                              ),
+                            ),
+                            SizedBox(width: 50),
+                            _buildSummaryBlock(),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 77),
+                    ],
+                  ),
+                ),
+              ),
+              FooterBlock(),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
+
+
 
     
-  Widget _buildCartItem(CartItem item, int index) {
-   return Container(
+  Widget _buildCartItem(Cart cartItem, int index) {
+
+  final item = cartItem.product;
+
+  return Container(
     padding: EdgeInsets.all(16),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -114,7 +129,7 @@ class _CartPageState extends State<CartPage> {
                 SizedBox(
                   width: 126,
                   height: 126,
-                  child: Image.asset(item.imageAsset, fit: BoxFit.contain),
+                  child: Image.asset(item.image, fit: BoxFit.contain),
                 ),
               ],
             ),
@@ -134,6 +149,9 @@ class _CartPageState extends State<CartPage> {
                     ),
                   ),
                   SizedBox(height: 25),
+
+                  // Комментируем блок с quantity
+                  /*
                   Row(
                     children: [
                       TextButton.icon(
@@ -205,6 +223,10 @@ class _CartPageState extends State<CartPage> {
                       ),
                     ],
                   ),
+                  */
+
+                  // Комментируем блок с available
+                  /*
                   if (!item.available)
                     Padding(
                       padding: const EdgeInsets.only(top: 8.0),
@@ -215,12 +237,14 @@ class _CartPageState extends State<CartPage> {
                           SizedBox(width: 4),
                           Text(
                             'Немає в наявності',
-                            style:
-                                TextStyle(color: Colors.grey[600], fontSize: 14),
+                            style: TextStyle(
+                                color: Colors.grey[600], fontSize: 14),
                           ),
                         ],
                       ),
                     ),
+                  */
+
                 ],
               ),
             ),
@@ -229,21 +253,21 @@ class _CartPageState extends State<CartPage> {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  '${(item.price * item.quantity).toStringAsFixed(0)} ₴',
+                  '${item.price.toStringAsFixed(0)} ₴',
                   style: GoogleFonts.montserrat(
                       fontSize: 25,
                       fontWeight: FontWeight.w800,
                       color: Color(0xFF333333)),
                 ),
-                if (item.oldPrice != null)
-                  Text(
-                    '${item.oldPrice!.toStringAsFixed(0)} ₴',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey,
-                      decoration: TextDecoration.lineThrough,
-                    ),
-                  ),
+                // if (item.oldPrice != null)
+                //   Text(
+                //     '${item.oldPrice!.toStringAsFixed(0)} ₴',
+                //     style: TextStyle(
+                //       fontSize: 16,
+                //       color: Colors.grey,
+                //       decoration: TextDecoration.lineThrough,
+                //     ),
+                //   ),
               ],
             ),
           ],
@@ -253,25 +277,26 @@ class _CartPageState extends State<CartPage> {
     ),
   );
 }
+
 }
 
-class CartItem {
-  final String name;
-  final double price;
-  final double? oldPrice;
-  final String imageAsset;
-  final bool available;
-  int quantity;
+// class CartItem {
+//   final String name;
+//   final double price;
+//   final double? oldPrice;
+//   final String imageAsset;
+//   final bool available;
+//   int quantity;
 
-  CartItem({
-    required this.name,
-    required this.price,
-    this.oldPrice,
-    required this.imageAsset,
-    this.available = true,
-    this.quantity = 1,
-  });
-}
+//   CartItem({
+//     required this.name,
+//     required this.price,
+//     this.oldPrice,
+//     required this.imageAsset,
+//     this.available = true,
+//     this.quantity = 1,
+//   });
+// }
 
 Widget _buildSummaryBlock() {
   return Container(
