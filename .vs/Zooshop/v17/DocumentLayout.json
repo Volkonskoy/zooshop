@@ -7,20 +7,20 @@
       "RelativeMoniker": "D:0:0:{7A4170E8-5B60-4946-8E29-E50F9FA8722E}|Zooshop.csproj|solutionrelative:controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7A4170E8-5B60-4946-8E29-E50F9FA8722E}|Zooshop.csproj|c:\\users\\48575\\desktop\\c#\\zooshop\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7A4170E8-5B60-4946-8E29-E50F9FA8722E}|Zooshop.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7A4170E8-5B60-4946-8E29-E50F9FA8722E}|Zooshop.csproj|c:\\users\\48575\\desktop\\c#\\zooshop\\controllers\\cartcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7A4170E8-5B60-4946-8E29-E50F9FA8722E}|Zooshop.csproj|solutionrelative:controllers\\cartcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{7A4170E8-5B60-4946-8E29-E50F9FA8722E}|Zooshop.csproj|c:\\users\\48575\\desktop\\c#\\zooshop\\models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{7A4170E8-5B60-4946-8E29-E50F9FA8722E}|Zooshop.csproj|solutionrelative:models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{7A4170E8-5B60-4946-8E29-E50F9FA8722E}|Zooshop.csproj|c:\\users\\48575\\desktop\\c#\\zooshop\\controllers\\productcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{7A4170E8-5B60-4946-8E29-E50F9FA8722E}|Zooshop.csproj|solutionrelative:controllers\\productcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7A4170E8-5B60-4946-8E29-E50F9FA8722E}|Zooshop.csproj|c:\\users\\48575\\desktop\\c#\\zooshop\\controllers\\cartcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7A4170E8-5B60-4946-8E29-E50F9FA8722E}|Zooshop.csproj|solutionrelative:controllers\\cartcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7A4170E8-5B60-4946-8E29-E50F9FA8722E}|Zooshop.csproj|c:\\users\\48575\\desktop\\c#\\zooshop\\models\\product.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7A4170E8-5B60-4946-8E29-E50F9FA8722E}|Zooshop.csproj|solutionrelative:models\\product.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{7A4170E8-5B60-4946-8E29-E50F9FA8722E}|Zooshop.csproj|c:\\users\\48575\\desktop\\c#\\zooshop\\data\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -38,20 +38,19 @@
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\48575\\Desktop\\C#\\Zooshop\\Program.cs",
-              "RelativeDocumentMoniker": "Program.cs",
-              "ToolTip": "C:\\Users\\48575\\Desktop\\C#\\Zooshop\\Program.cs",
-              "RelativeToolTip": "Program.cs",
-              "ViewState": "AQIAAAYAAAAAAAAAAAAAABkAAABJAAAA",
+              "DocumentIndex": 4,
+              "Title": "Product.cs",
+              "DocumentMoniker": "C:\\Users\\48575\\Desktop\\C#\\Zooshop\\Models\\Product.cs",
+              "RelativeDocumentMoniker": "Models\\Product.cs",
+              "ToolTip": "C:\\Users\\48575\\Desktop\\C#\\Zooshop\\Models\\Product.cs",
+              "RelativeToolTip": "Models\\Product.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAA0AAAAzAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-24T17:52:10.207Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-24T18:27:23.408Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 1,
               "Title": "User.cs",
               "DocumentMoniker": "C:\\Users\\48575\\Desktop\\C#\\Zooshop\\Models\\User.cs",
               "RelativeDocumentMoniker": "Models\\User.cs",
@@ -70,14 +69,14 @@
               "RelativeDocumentMoniker": "Controllers\\UserController.cs",
               "ToolTip": "C:\\Users\\48575\\Desktop\\C#\\Zooshop\\Controllers\\UserController.cs",
               "RelativeToolTip": "Controllers\\UserController.cs",
-              "ViewState": "AQIAABIAAAAAAAAAAAAYwCMAAAAiAAAA",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAA0AAABMAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-05-24T13:47:32.714Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "CartController.cs",
               "DocumentMoniker": "C:\\Users\\48575\\Desktop\\C#\\Zooshop\\Controllers\\CartController.cs",
               "RelativeDocumentMoniker": "Controllers\\CartController.cs",
@@ -85,18 +84,17 @@
               "RelativeToolTip": "Controllers\\CartController.cs",
               "ViewState": "AQIAABAAAAAAAAAAAAAQwCYAAAAJAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-24T11:38:57.452Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-24T11:38:57.452Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 2,
               "Title": "ProductController.cs",
               "DocumentMoniker": "C:\\Users\\48575\\Desktop\\C#\\Zooshop\\Controllers\\ProductController.cs",
               "RelativeDocumentMoniker": "Controllers\\ProductController.cs",
               "ToolTip": "C:\\Users\\48575\\Desktop\\C#\\Zooshop\\Controllers\\ProductController.cs",
               "RelativeToolTip": "Controllers\\ProductController.cs",
-              "ViewState": "AQIAAAMAAAAAAAAAAAAAABsAAAAJAAAA",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABsAAAAJAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-05-24T11:29:35.382Z",
               "EditorCaption": ""
@@ -111,8 +109,7 @@
               "RelativeToolTip": "Data\\AppDbContext.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAkAAAAuAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-23T20:10:45.706Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-23T20:10:45.706Z"
             }
           ]
         }
