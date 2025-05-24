@@ -131,3 +131,4 @@ C:\Users\48575\Desktop\C#\Zooshop\obj\Debug\net8.0\refint\Zooshop.dll
 C:\Users\48575\Desktop\C#\Zooshop\obj\Debug\net8.0\Zooshop.pdb
 C:\Users\48575\Desktop\C#\Zooshop\obj\Debug\net8.0\Zooshop.genruntimeconfig.cache
 C:\Users\48575\Desktop\C#\Zooshop\obj\Debug\net8.0\ref\Zooshop.dll
+C:\Users\48575\Desktop\C#\Zooshop\obj\Debug\net8.0\Zooshop.sourcelink.json

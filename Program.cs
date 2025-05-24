@@ -18,7 +18,7 @@ namespace Zooshop
                 {
                     // –азрешаем запросы только с указанного источника: http://localhost:4200.
                     // Ёто адрес, где работает ваш Angular-фронтенд.
-                    policy.WithOrigins("http://localhost:56861")
+                    policy.WithOrigins("http://localhost:63615")
                         // –азрешаем любые HTTP-методы (GET, POST, PUT, DELETE и т.д.).
                         .AllowAnyMethod()
                         // –азрешаем любые заголовки в запросах (например, Content-Type, Authorization).

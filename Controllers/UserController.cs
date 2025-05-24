@@ -14,7 +14,45 @@ namespace Zooshop.Controllers
             db = context; //Создаём экземпляр дб контекста для операций с бд
         }
 
-        [HttpGet]
-        public IEnumerable<User> Get() => db.Users.ToList();
+        [HttpGet("{id}")]
+        public IActionResult Get(int id)
+        {
+            var user = db.Users.SingleOrDefault(u => u.Id == id);
+
+            if (user == null) { return NotFound(); }
+            return Ok(user);
+        }
+
+        [HttpPost] //Этот запрос выполняется когда уже известны все атрибуты класса, тоесть они переданы прямо
+        public IActionResult Post([FromBody] User user)
+        {
+            if (!ModelState.IsValid) //Проверяет атрибуты Required
+            {
+                return BadRequest(ModelState);
+            }
+
+            var newUser = new User { Name = user.Name, Email = user.Email, Password = user.Password, GoogleId = user.GoogleId };
+
+            db.Users.Add(newUser);
+            db.SaveChanges();
+            return Ok(newUser);
+        }
+
+        [HttpPut]
+        public ActionResult Put([FromBody] User user)
+        {
+            if (!ModelState.IsValid) //Проверяет атрибуты Required
+            {
+                return BadRequest(ModelState);
+            }
+            var storedUser = db.Users.SingleOrDefault(u => u.Id == user.Id);
+            if (storedUser == null) { return NotFound(); }
+            storedUser.Name = user.Name;
+            storedUser.Email = user.Email;
+            storedUser.Password = user.Password;
+            storedUser.GoogleId = user.GoogleId;
+            db.SaveChanges();
+            return Ok(storedUser);
+        }
     }
 }

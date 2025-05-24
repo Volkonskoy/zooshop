@@ -17,5 +17,14 @@ namespace Zooshop.Controllers
 
         [HttpGet]
         public IEnumerable<Product> Get() => db.Products.ToList();
+
+        [HttpGet("{id}")]
+        public IActionResult Get(int id)
+        {
+            var product = db.Products.SingleOrDefault(p => p.Id == id);
+
+            if (product == null) { return NotFound(); }
+            return Ok(product);
+        }
     }
 }
