@@ -319,7 +319,7 @@ class ProductsBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<Product>>(
+    return FutureBuilder<List<ProductDTO>>(
       future: fetchProducts(), // Получаем список товаров
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -329,14 +329,14 @@ class ProductsBlock extends StatelessWidget {
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
           return Center(child: Text('Нет товаров для отображения')); // Когда нет данных
         } else {
-          List<Product> products = snapshot.data!;
+          List<ProductDTO> products = snapshot.data!;
 
           // Разбиваем список на несколько рядов
           return Column(
             children: List.generate((products.length / 4).ceil(), (index) {
               int startIndex = index * 4;
               int endIndex = (startIndex + 4) < products.length ? startIndex + 4 : products.length;
-              List<Product> rowProducts = products.sublist(startIndex, endIndex);
+              List<ProductDTO> rowProducts = products.sublist(startIndex, endIndex);
 
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 25),
@@ -355,7 +355,7 @@ class ProductsBlock extends StatelessWidget {
 }
 
 class ProductCard extends StatelessWidget {
-  final Product product;
+  final ProductDTO product;
 
   const ProductCard({super.key, required this.product});
 

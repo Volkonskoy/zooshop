@@ -7,7 +7,7 @@ import 'models/Product.dart';
 
 
 class ProductPage extends StatelessWidget {
-    final Product product;
+    final ProductDTO product;
 
   const ProductPage({super.key, required this.product});
 

@@ -9,6 +9,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'header.dart';
 import 'footer.dart';
+import 'auth_service.dart';
+
 
 class AccountLayout extends StatelessWidget {
   final Widget child;
@@ -102,6 +104,9 @@ class AccountLayout extends StatelessWidget {
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
         onTap: () {
+          if(title == 'Вийти'){
+               Provider.of<AuthProvider>(context, listen: false).logout();
+          }
           if (page != null && !isActive) {
             Navigator.pushReplacement(
                 context, MaterialPageRoute(builder: (_) => page));

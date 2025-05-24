@@ -3,32 +3,49 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:developer';
 
-class Product {
+class ProductDTO {
   final int id;
   final String name;
   final int price;
   final String image;
   final String desc;
+  final String petCategory;
+  final String productCategory;
 
-  Product({required this.id, required this.name, required this.price, required this.image, required this.desc});
+  ProductDTO({required this.id, required this.name, required this.price, 
+  required this.image, required this.desc, required this.petCategory, required this.productCategory});
 
-  factory Product.fromJson(Map<String, dynamic> json) {
-    return Product(
+  factory ProductDTO.fromJson(Map<String, dynamic> json) {
+    return ProductDTO(
       id: json['id'],
       name: json['name'],
       price: json['price'],
       image: json['image'],
       desc: json['desc'],
+      petCategory: json['petCategory'],
+      productCategory: json['productCategory'],
     );
   }
 }
 
-Future<List<Product>> fetchProducts() async {
+Future<ProductDTO> fetchProductById(int id) async {
+  final response = await http.get(Uri.parse('https://localhost:7097/api/Product/$id'));
+
+  if (response.statusCode == 200) {
+    print(json.decode(response.body));
+    return ProductDTO.fromJson(json.decode(response.body));
+  } else {
+    throw Exception('Не удалось загрузить продукт');
+  }
+}
+
+Future<List<ProductDTO>> fetchProducts() async {
   final response = await http.get(Uri.parse('https://localhost:7097/api/Product'));
 
   if (response.statusCode == 200) {
+    // Если запрос успешный, парсим JSON
     List<dynamic> data = json.decode(response.body);
-    return data.map((item) => Product.fromJson(item)).toList();
+    return data.map((item) => ProductDTO.fromJson(item)).toList();
   } else {
     throw Exception('Не удалось загрузить товары');
   }

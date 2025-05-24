@@ -6,6 +6,7 @@ import 'package:zooshop/orders_page.dart';
 import 'package:zooshop/subscription_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/gestures.dart';
+import 'auth_service.dart';
 
 void main() {
   runApp(
@@ -37,6 +38,9 @@ void main() {
             ]);
             return subscriptionProvider;
           }, 
+        ),
+        ChangeNotifierProvider<AuthProvider>( 
+          create: (_) => AuthProvider(),
         ),
       ],
       child: MyApp(),
@@ -126,7 +130,7 @@ class PromoVetCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Кошталтість сильно\nпідвищиться!',
+                    'Кошлатість сильно\nпідвищиться!',
                     style: TextStyle(
                       fontSize: 40,
                       fontWeight: FontWeight.w800,
