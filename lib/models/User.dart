@@ -27,6 +27,8 @@ class UserDTO {
     String? email,
     String? password,
     String? googleId,
+    String? address,
+
   }) {
     return UserDTO(
       id: id ?? this.id,
@@ -34,6 +36,7 @@ class UserDTO {
       email: email ?? this.email,
       password: password ?? this.password,
       googleId: googleId ?? this.googleId,
+      address: address ?? this.address
     );
   }
 
