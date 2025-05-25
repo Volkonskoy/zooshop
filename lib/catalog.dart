@@ -58,14 +58,31 @@ class _CatalogPageState extends State<CatalogPage> {
           .map((entry) => entry.key)
           .toList();
 
+      if (selectedTypes.isNotEmpty) {
+        final noProducts = await fetchProductsByFiltration(
+          name: searchQuery,
+          startPrice: startPrice,
+          endPrice: endPrice,
+          petCategory: widget.animalType,
+          productCategory: selectedTypes.join(","),
+        );
+
+        setState(() {
+          products = noProducts;
+          isLoading = false;
+          _currentPage = 0;
+        });
+
+        return;
+      }
+
       List<ProductDTO> fetchedProducts = await fetchProductsByFiltration(
         name: searchQuery,
         startPrice: startPrice,
         endPrice: endPrice,
-        petCategory: widget.animalType, 
-        productCategory: selectedTypes.isNotEmpty ? selectedTypes.join(",") : null,
+        petCategory: widget.animalType,
+        productCategory: null, 
       );
-
 
       setState(() {
         products = fetchedProducts;
@@ -76,9 +93,11 @@ class _CatalogPageState extends State<CatalogPage> {
       print('Помилка завантаження товарів: $e');
       setState(() {
         isLoading = false;
+        products = [];
       });
     }
   }
+
 
   @override
   Widget build(BuildContext context) {

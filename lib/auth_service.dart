@@ -27,7 +27,7 @@ class SignInDemo extends StatefulWidget {
         final user = await _googleSignIn.signIn();
         if (user != null) {
           final auth = await user.authentication;
-          final idToken = auth.idToken;
+          final idToken = auth.idToken;  
           print('ID Token: $idToken');
 
           // final response = await http.post(
