@@ -84,5 +84,27 @@ namespace Zooshop.Controllers
 
             return Ok("Корзина успешно очищена.");
         }
+
+        [HttpPut]
+        public IActionResult UpdateQuantity([FromBody] Cart updatedCart)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var cartItem = db.Carts.SingleOrDefault(c => c.UserId == updatedCart.UserId && c.ProductId == updatedCart.ProductId);
+
+            if (cartItem == null)
+            {
+                return NotFound("Товар не найден в корзине.");
+            }
+
+            cartItem.Count = updatedCart.Count;
+
+            db.SaveChanges();
+            return Ok(cartItem);
+        }
+
     }
 }

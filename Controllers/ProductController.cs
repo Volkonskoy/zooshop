@@ -86,4 +86,6 @@ public class ProductDTO
     public int? EndPrice { get; set; }
     public string? PetCategory { get; set; }
     public string? ProductCategory { get; set; }
+    public int? DiscountPercent { get; set; }
+
 }

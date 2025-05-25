@@ -12,5 +12,7 @@ namespace Zooshop.Models
         public string Desc { get; set; }
         public string PetCategory { get; set; }
         public string ProductCategory { get; set; }
+        public int? DiscountPercent { get; set; }
+
     }
 }
