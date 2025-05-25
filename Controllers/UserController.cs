@@ -31,7 +31,8 @@ namespace Zooshop.Controllers
                 return BadRequest(ModelState);
             }
 
-            var newUser = new User { Name = user.Name, Email = user.Email, Password = user.Password, GoogleId = user.GoogleId };
+            var newUser = new User { Name = user.Name, Email = user.Email, 
+                Password = user.Password, GoogleId = user.GoogleId, Address = user.Address };
 
             db.Users.Add(newUser);
             db.SaveChanges();
@@ -51,6 +52,7 @@ namespace Zooshop.Controllers
             storedUser.Email = user.Email;
             storedUser.Password = user.Password;
             storedUser.GoogleId = user.GoogleId;
+            storedUser.Address = user.Address;
             db.SaveChanges();
             return Ok(storedUser);
         }

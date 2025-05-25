@@ -31,11 +31,58 @@ namespace Zooshop.Controllers
                 return BadRequest(ModelState);
             }
 
-            var newCart = new Cart { UserId = cart.UserId, ProductId = cart.ProductId };
+            var oldCart = db.Carts.SingleOrDefault(c => c.UserId == cart.UserId && c.ProductId == cart.ProductId);
 
-            db.Carts.Add(newCart);
-            db.SaveChanges();
-            return Ok(newCart);
+            if(oldCart == null)
+            {
+                var newCart = new Cart { UserId = cart.UserId, ProductId = cart.ProductId, Count = cart.Count };
+                db.Carts.Add(newCart);
+                db.SaveChanges();
+                return Ok(newCart);
+            } else
+            {
+                oldCart.Count = oldCart.Count + 1;
+                db.SaveChanges();
+                return Ok(oldCart);
+            }
+        }
+
+        [HttpDelete("DeleteProduct/{userId}/{productId}")]
+        public IActionResult Delete(int userId, int productId)
+        {
+            // Находим товар в корзине для указанного UserId и ProductId
+            var cartItem = db.Carts.SingleOrDefault(c => c.UserId == userId && c.ProductId == productId);
+
+            // Если товар не найден, возвращаем ошибку NotFound
+            if (cartItem == null)
+            {
+                return NotFound("Товар не найден в корзине.");
+            }
+
+            // Удаляем найденный товар из корзины
+            db.Carts.Remove(cartItem);
+            db.SaveChanges(); // Сохраняем изменения в базе данных
+
+            return Ok("Товар успешно удален из корзины.");
+        }
+
+        [HttpDelete("ClearCart/{userId}")]
+        public IActionResult ClearCart(int userId)
+        {
+            // Получаем все товары из корзины для указанного UserId
+            var cartItems = db.Carts.Where(c => c.UserId == userId).ToList();
+
+            // Если корзина пуста, возвращаем ошибку NotFound
+            if (!cartItems.Any())
+            {
+                return NotFound("Корзина пуста.");
+            }
+
+            // Удаляем все товары из корзины для этого пользователя
+            db.Carts.RemoveRange(cartItems);
+            db.SaveChanges(); // Сохраняем изменения в базе данных
+
+            return Ok("Корзина успешно очищена.");
         }
     }
 }
