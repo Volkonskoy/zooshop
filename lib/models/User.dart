@@ -9,6 +9,7 @@ class UserDTO {
   final String email;
   final String password;
   String? googleId;
+  String? address;
 
   Map<String, dynamic> toJson() {
     return {
@@ -17,11 +18,27 @@ class UserDTO {
       'email': email,
       'password': password,
       'googleId': googleId,
+      'address': address,
     };
+  }
+  UserDTO copyWith({
+    int? id,
+    String? name,
+    String? email,
+    String? password,
+    String? googleId,
+  }) {
+    return UserDTO(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      email: email ?? this.email,
+      password: password ?? this.password,
+      googleId: googleId ?? this.googleId,
+    );
   }
 
   UserDTO({this.id, required this.name, required this.email, required this.password,
-  this.googleId});
+  this.googleId, this.address});
 }
 
 Future<UserDTO> fetchUserByUserEmail(String email, String password) async {
@@ -38,6 +55,7 @@ Future<UserDTO> fetchUserByUserEmail(String email, String password) async {
       email: userData['email'],
       password: userData['password'],
       googleId: userData['googleId'],
+      address: userData['address'],
     );
 
     return user;

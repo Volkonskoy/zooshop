@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:zooshop/account_layout.dart';
 import 'package:provider/provider.dart';
+import 'package:zooshop/models/User.dart';
 import 'auth_service.dart';
 
 
@@ -56,6 +57,34 @@ class _AccountPageState extends State<AccountPage> {
     emailController.dispose();
     super.dispose();
   }
+  void _saveUser() {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final user = authProvider.user;
+
+      if (user == null) {
+        return;
+      }
+
+      UserDTO updatedUser = user.copyWith(
+        name: '${nameController.text} ${surnameController.text}'.trim(),
+        email: emailController.text,
+      );
+
+      authProvider.setUser(updatedUser);
+      try{
+        updateUser(updatedUser);
+        ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Особисті дані успішно збережено')),
+      );
+      } 
+      catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Помилка при зміні особистих даних: $e')),
+      );
+    }
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +111,7 @@ class _AccountPageState extends State<AccountPage> {
                   ),
                 ),
                 onPressed: () {
-                  // Обработка сохранения
+                  _saveUser();
                 },
                 child: Text(
                   'Зберегти',

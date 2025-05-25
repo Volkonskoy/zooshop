@@ -46,25 +46,41 @@ class _OrdersPageState extends State<OrdersPage> {
           endIndex > orders.length ? orders.length : endIndex,
         );
 
-        return AccountLayout(
-          activeMenu: 'Історія замовлень',
-          child: Container(
-            padding: EdgeInsets.all(16),
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  ...currentOrders
-                      .asMap()
-                      .entries
-                      .map((entry) => _buildOrderCard(entry.value, entry.key))
-                      .toList(),
-                  SizedBox(height: 24),
-                  _buildPagination(totalPages),
-                ],
+        if (orders.isEmpty) {
+          return AccountLayout(
+            activeMenu: 'Історія замовлень',
+            child: Center(
+              child: Padding(
+                padding: EdgeInsets.all(16),
+                child: Text(
+                  'Замовлень немає',
+                  style: TextStyle(fontSize: 16, color: Colors.grey),
+                  textAlign: TextAlign.center,
+                ),
               ),
             ),
-          ),
-        );
+          );
+        } else {
+          return AccountLayout(
+            activeMenu: 'Історія замовлень',
+            child: Container(
+              padding: EdgeInsets.all(16),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    ...currentOrders
+                        .asMap()
+                        .entries
+                        .map((entry) => _buildOrderCard(entry.value, entry.key))
+                        .toList(),
+                    SizedBox(height: 24),
+                    _buildPagination(totalPages),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }
       },
     );
   }

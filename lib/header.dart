@@ -47,7 +47,21 @@ class HeaderBlock extends StatelessWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              Expanded(flex: 3, child: SearchBar()),
+                              Expanded(
+                                  flex: 3, 
+                                  child: SearchBar(
+                                  onSearch: (query) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => CatalogPage(
+                                        searchQuery: query,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                ),
+                              ),
                               SizedBox(width: 20),
                               authProvider.isLoggedIn && authProvider.user != null
                                 ? UserProfileButton(userName: authProvider.user!.name)
@@ -114,36 +128,37 @@ class MenuBottomNavigation extends StatelessWidget {
               spacing: 10,
               children: [
                 TextButton(
-                  onPressed:
-                      () => {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder:
-                                (context) => CatalogPage(),
-                          ),
-                        ),
-                      },
-                  child: Text(
-                    "Кішки",
-                    style: TextStyle(color: Colors.black),
-                  ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CatalogPage(),
+                      ),
+                    );
+                  },
+                  child: Text("Усі товари", style: TextStyle(color: Colors.black)),
                 ),
                 TextButton(
-                  onPressed:
-                      () => {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder:
-                                (context) => CatalogPage(),
-                          ),
-                        ),
-                      },
-                  child: Text(
-                    "Собаки",
-                    style: TextStyle(color: Colors.black),
-                  ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CatalogPage(animalType: "Кішки"),
+                      ),
+                    );
+                  },
+                  child: Text("Кішки", style: TextStyle(color: Colors.black)),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CatalogPage(animalType: "Собаки"),
+                      ),
+                    );
+                  },
+                  child: Text("Собаки", style: TextStyle(color: Colors.black)),
                 ),
               ],
             ),
@@ -267,28 +282,53 @@ class UserProfileButton extends StatelessWidget {
 }
 
 
-class SearchBar extends StatelessWidget {
-  const SearchBar({super.key});
+class SearchBar extends StatefulWidget {
+  final Function(String) onSearch;
+
+  const SearchBar({Key? key, required this.onSearch}) : super(key: key);
+
+  @override
+  _SearchBarState createState() => _SearchBarState();
+}
+
+class _SearchBarState extends State<SearchBar> {
+  final TextEditingController _controller = TextEditingController();
+
+  void _onSearchPressed() {
+    final query = _controller.text.trim();
+    if (query.isNotEmpty) {
+      widget.onSearch(query);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return TextField(
+      controller: _controller,
       decoration: InputDecoration(
         labelText: 'Пошук товарів',
-        suffixIcon: Icon(Icons.search, color: Color(0xFF95C74E)),
+        suffixIcon: IconButton(
+          icon: Icon(Icons.search, color: Color(0xFF95C74E)),
+          onPressed: _onSearchPressed,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(5),
           borderSide: BorderSide(color: Colors.grey, width: 0.5),
-          
         ),
-        contentPadding: EdgeInsets.symmetric(
-          horizontal: 20,
-          vertical: 20,
-        ),
+        contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       ),
+      onSubmitted: (_) => _onSearchPressed(),
     );
   }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 }
+
+
 
 class RegisterDialog extends StatefulWidget {
   const RegisterDialog({Key? key}) : super(key: key);
@@ -382,8 +422,10 @@ class _RegisterDialogState extends State<RegisterDialog> {
 
     try {
       if (_isLoginMode) {
-       UserDTO loggedUser = await fetchUserByUserEmail(email, password);
+        UserDTO loggedUser = await fetchUserByUserEmail(email, password);
         Provider.of<AuthProvider>(context, listen: false).login(user: loggedUser);
+        Navigator.of(context).pop();
+
       } else {
         _register();
       }
@@ -410,7 +452,7 @@ class _RegisterDialogState extends State<RegisterDialog> {
             Image.asset('assets/images/logo.png', height: 100),
             SizedBox(height: 20),
             Text(
-              _isLoginMode ? 'Увійти' : 'Реєстрація',
+              _isLoginMode ? 'Вхід' : 'Реєстрація',
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
@@ -484,7 +526,7 @@ class _RegisterDialogState extends State<RegisterDialog> {
                     ? CircularProgressIndicator(color: Colors.white)
                     : Text(
                         _isLoginMode ? 'Увійти' : 'Зареєструватися',
-                        style: TextStyle(fontSize: 18),
+                        style: TextStyle(fontSize: 18, color: Colors.white),
                       ),
               ),
             ),

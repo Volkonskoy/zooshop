@@ -4,117 +4,351 @@ import 'package:zooshop/main.dart';
 import 'header.dart';
 import 'footer.dart';
 import 'models/Product.dart';
+import 'auth_service.dart';
+import 'package:provider/provider.dart';
+import 'package:zooshop/cartProvider.dart';
 
-class CatalogPage extends StatelessWidget {
-  const CatalogPage({super.key});
+
+class CatalogPage extends StatefulWidget {
+  final String? searchQuery;
+  final String? animalType; 
+
+  const CatalogPage({Key? key, this.searchQuery, this.animalType}) : super(key: key);
 
   @override
-Widget build(BuildContext context) {
-  final screenWidth = MediaQuery.of(context).size.width;
+  State<CatalogPage> createState() => _CatalogPageState();
+}
 
-  return Scaffold(
-    backgroundColor: Colors.white,
-    body: SingleChildScrollView(
-      child: Column(
-        children: [
-          Center(
-            child: SizedBox(
-              width: screenWidth * 0.82,
+class _CatalogPageState extends State<CatalogPage> {
+  int _currentPage = 0;
+  final int _productsPerPage = 16;
+  List<ProductDTO> products = [];
+  bool isLoading = true;
+
+  final TextEditingController _startPriceController = TextEditingController();
+  final TextEditingController _endPriceController = TextEditingController();
+
+  int? startPrice;
+  int? endPrice;
+
+  Map<String, bool> productTypes = {
+    "Корм": false,
+    "Іграшки": false,
+    "Аксесуари": false,
+    "Ліки": false,
+  };
+
+  String? searchQuery;
+
+  @override
+  void initState() {
+    super.initState();
+    searchQuery = widget.searchQuery;
+    _loadProducts();
+  }
+
+  Future<void> _loadProducts() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      List<String> selectedTypes = productTypes.entries
+          .where((entry) => entry.value)
+          .map((entry) => entry.key)
+          .toList();
+
+      List<ProductDTO> fetchedProducts = await fetchProductsByFiltration(
+        name: searchQuery,
+        startPrice: startPrice,
+        endPrice: endPrice,
+        petCategory: widget.animalType, 
+        productCategory: selectedTypes.isNotEmpty ? selectedTypes.join(",") : null,
+      );
+
+
+      setState(() {
+        products = fetchedProducts;
+        isLoading = false;
+        _currentPage = 0;
+      });
+    } catch (e) {
+      print('Помилка завантаження товарів: $e');
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final totalPages = (products.length / _productsPerPage).ceil();
+    final startIndex = _currentPage * _productsPerPage;
+    final endIndex = (_currentPage + 1) * _productsPerPage;
+    final currentProducts = products.sublist(
+      startIndex,
+      endIndex > products.length ? products.length : endIndex,
+    );
+
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  HeaderBlock(),
-                  SizedBox(height: 20),
                   Center(
-                    child: Container(
-                      padding: EdgeInsets.only(left: 20),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
+                    child: SizedBox(
+                      width: screenWidth * 0.82,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            "Товари для собак",
-                            textAlign: TextAlign.end,
-                            style: TextStyle(
-                              fontSize: 30,
-                              fontWeight: FontWeight.bold,
-                              color: Color.fromARGB(255, 69, 48, 40),
+                          HeaderBlock(),
+                          SizedBox(height: 20),
+                          Padding(
+                            padding: EdgeInsets.only(left: 20),
+                            child: Text(
+                              _buildCatalogTitle(),
+                              style: TextStyle(
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold,
+                                color: Color.fromARGB(255, 69, 48, 40),
+                              ),
                             ),
                           ),
+                          SizedBox(height: 40),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                              padding: EdgeInsets.only(left: 20, right:30),
+                              child:_buildSettingsBlock(),),
+                              Expanded(
+                                child: ProductsBlock(products: currentProducts), 
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 24),
+                          _buildPagination(totalPages),
+                          SizedBox(height: 70),
                         ],
                       ),
                     ),
                   ),
-                  SizedBox(height: 40),
-                  Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        SettingsBlock(),
-                        ProductsBlock(),
-                      ],
-                    ),
-                  SizedBox(height: 70),
+                  FooterBlock(),
                 ],
               ),
             ),
-          ),
+    );
+  }
+  String _buildCatalogTitle() {
+    if (widget.searchQuery != null && widget.searchQuery!.isNotEmpty) {
+      return 'Результати пошуку для "${widget.searchQuery}"';
+    } else if (widget.animalType != null && widget.animalType!.isNotEmpty) {
+      return 'Товари для категорії ${widget.animalType!.toLowerCase()}';
+    } else {
+      return 'Усі товари';
+    }
+  }
 
-          Container(
-            width: screenWidth,
-            child: FooterBlock(), 
-          ),
-        ],
-      ),
-    ),
-  );
-}
-
-}
-
-class SettingsBlock extends StatelessWidget {
-  const SettingsBlock({super.key});
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildSettingsBlock() {
     return SizedBox(
-      width: 300,
+      width: 244,
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          Text("Ціна", style: TextStyle(fontSize: 25)),
+          SizedBox(height: 20),
+          Row(
             children: [
-              Text("Ціна", style: TextStyle(fontSize: 25)),
-              SizedBox(height: 20),
-              Row(
-                spacing: 10,
-                children: [PriceFromTag(), PriceToTag()],
+              Expanded(
+                child: TextField(
+                  controller: _startPriceController,
+                  decoration: InputDecoration(labelText: "Від"),
+                  keyboardType: TextInputType.number,
+                ),
               ),
-              SizedBox(height: 30),
-              Text("Тип", style: TextStyle(fontSize: 25)),
-              SizedBox(height: 20),
-              ProductCheckbox(
-                productName: "Корм",
-                quantity: "345",
-              ),
-              ProductCheckbox(
-                productName: "Іграшки",
-                quantity: "233",
-              ),
-              ProductCheckbox(
-                productName: "Аксесуари",
-                quantity: "53",
-              ),
-              ProductCheckbox(
-                productName: "Ліки",
-                quantity: "12",
+              SizedBox(width: 10),
+              Expanded(
+                child: TextField(
+                  controller: _endPriceController,
+                  decoration: InputDecoration(labelText: "До"),
+                  keyboardType: TextInputType.number,
+                ),
               ),
             ],
           ),
+          SizedBox(height: 10),
+          Center(child:ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              padding: EdgeInsets.symmetric(horizontal: 60),
+              backgroundColor: Color(0xFFC16AFF),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5),
+              ),
+            ),
+            onPressed: () {
+              setState(() {
+                startPrice = int.tryParse(_startPriceController.text);
+                endPrice = int.tryParse(_endPriceController.text);
+              });
+              _loadProducts();
+            },
+            child: Text("Накласти фільтр", style: TextStyle(
+                fontSize: 14,
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+              ),),
+          ),
+          ),
+          SizedBox(height: 7), 
+          Center(child:ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              padding: EdgeInsets.symmetric(horizontal: 72),
+              backgroundColor: Color.fromARGB(255, 221, 212, 228),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5),
+              ),
+            ),
+            onPressed: () {
+              setState(() {
+                startPrice = null;
+                endPrice = null;
+                _startPriceController.clear();
+                _endPriceController.clear();
+
+                productTypes.updateAll((key, value) => false);
+              });
+              _loadProducts();
+            },
+            child: Text("Зняти фільтр", style: TextStyle(
+                fontSize: 14,
+                color: const Color.fromARGB(255, 71, 71, 71),
+                fontWeight: FontWeight.w600,
+              ),),
+            ),),
+          SizedBox(height: 30),
+          Text("Тип", style: TextStyle(fontSize: 18)),
+          SizedBox(height: 20),
+          ...productTypes.keys.map((type) {
+            return CheckboxListTile(
+              title: Text(type, style: TextStyle(fontSize: 15),),
+              value: productTypes[type],
+              onChanged: (bool? val) {
+                setState(() {
+                  productTypes[type] = val ?? false;
+                });
+                _loadProducts();
+              },
+              activeColor: Colors.brown,
+              controlAffinity: ListTileControlAffinity.leading,
+            );
+          }).toList(),
         ],
       ),
     );
   }
+  Widget _buildPagination(int totalPages) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        IconButton(
+          icon: Icon(Icons.chevron_left),
+          onPressed: _currentPage > 0
+              ? () {
+                  setState(() {
+                    _currentPage--;
+                  });
+                }
+              : null,
+        ),
+        ...List.generate(totalPages, (index) {
+          final isActive = index == _currentPage;
+          return GestureDetector(
+            onTap: () {
+              setState(() {
+                _currentPage = index;
+              });
+            },
+            child: Container(
+              margin: EdgeInsets.symmetric(horizontal: 6),
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: isActive ? Color(0xFFC16AFF) : Colors.white,
+                borderRadius: BorderRadius.circular(30),
+              ),
+              child: Text(
+                '${index + 1}',
+                style: TextStyle(
+                  color: isActive ? Colors.white : Colors.black,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          );
+        }),
+        IconButton(
+          icon: Icon(Icons.chevron_right),
+          onPressed: _currentPage < totalPages - 1
+              ? () {
+                  setState(() {
+                    _currentPage++;
+                  });
+                }
+              : null,
+        ),
+      ],
+    );
+  }
 }
+
+// class SettingsBlock extends StatelessWidget {
+//   const SettingsBlock({super.key});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return SizedBox(
+//       width: 244,
+//       child: Column(
+//         children: [
+//           Column(
+//             crossAxisAlignment: CrossAxisAlignment.start,
+//             children: [
+//               Text("Ціна", style: TextStyle(fontSize: 25)),
+//               SizedBox(height: 20),
+//               Row(
+//                 spacing: 10,
+//                 children: [PriceFromTag(), PriceToTag()],
+//               ),
+//               SizedBox(height: 30),
+//               Text("Тип", style: TextStyle(fontSize: 25)),
+//               SizedBox(height: 20),
+//               ProductCheckbox(
+//                 productName: "Корм",
+//                 quantity: "345",
+//               ),
+//               ProductCheckbox(
+//                 productName: "Іграшки",
+//                 quantity: "233",
+//               ),
+//               ProductCheckbox(
+//                 productName: "Аксесуари",
+//                 quantity: "53",
+//               ),
+//               ProductCheckbox(
+//                 productName: "Ліки",
+//                 quantity: "12",
+//               ),
+//             ],
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+  
+// }
+
 
 class PriceFromTag extends StatelessWidget {
   const PriceFromTag({super.key});
@@ -305,54 +539,31 @@ class _ProductCheckboxState extends State<ProductCheckbox> {
   }
 }
 
-class PurchasesBlock extends StatelessWidget {
-  const PurchasesBlock({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
 
 class ProductsBlock extends StatelessWidget {
-  const ProductsBlock({super.key});
+  final List<ProductDTO> products;
+
+  const ProductsBlock({required this.products, super.key});
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<ProductDTO>>(
-      future: fetchProducts(), // Получаем список товаров
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator()); // Показать индикатор загрузки
-        } else if (snapshot.hasError) {
-          return Center(child: Text('Ошибка загрузки данных')); // Обработка ошибки
-        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return Center(child: Text('Нет товаров для отображения')); // Когда нет данных
-        } else {
-          List<ProductDTO> products = snapshot.data!;
+    if (products.isEmpty) {
+      return Center(child: Text('Не знайдено товарів'));
+    }
 
-          // Разбиваем список на несколько рядов
-          return Column(
-            children: List.generate((products.length / 4).ceil(), (index) {
-              int startIndex = index * 4;
-              int endIndex = (startIndex + 4) < products.length ? startIndex + 4 : products.length;
-              List<ProductDTO> rowProducts = products.sublist(startIndex, endIndex);
-
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 25),
-                child: Row(
-                  spacing: 30,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: rowProducts.map((product) => ProductCard(product: product)).toList(),
-                ),
-              );
-            }),
-          );
-        }
-      },
+    return Wrap(
+      spacing: 10,       // горизонтальный отступ между карточками
+      runSpacing: 25,    // вертикальный отступ между строками
+      children: products.map((product) {
+        return SizedBox(
+          width: 220,    // фиксированная ширина карточки (как в ProductCard)
+          child: ProductCard(product: product),
+        );
+      }).toList(),
     );
   }
 }
+
 
 class ProductCard extends StatelessWidget {
   final ProductDTO product;
@@ -456,8 +667,16 @@ class ProductCard extends StatelessWidget {
               width: double.infinity,
               height: 40,
               child: ElevatedButton(
-                onPressed: () {
-               
+                onPressed: () async {
+                  final authProvider = Provider.of<AuthProvider>(context, listen: false);
+                  if(authProvider.isLoggedIn){
+                      final userId = authProvider.user!.id!;
+                      Provider.of<CartProvider>(context, listen: false).addOrUpdateCartItem(product, context);
+                  }
+                  else{
+                    showRegisterDialog(context);
+                  }
+                 
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xFF95C74E),
@@ -480,79 +699,3 @@ class ProductCard extends StatelessWidget {
   }
 }
 
-
-
-class PaginationWidget extends StatefulWidget {
-  const PaginationWidget({super.key});
-
-  @override
-  _PaginationWidgetState createState() =>
-      _PaginationWidgetState();
-}
-
-class _PaginationWidgetState
-    extends State<PaginationWidget> {
-  int currentPage = 1;
-  int numPages = 49;
-
-  void _onPageChanged(int page) {
-    if (page > 0 && page <= numPages) {
-      setState(() {
-        currentPage = page;
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      spacing: 5,
-      children: [
-        IconButton(
-          onPressed: () {
-            _onPageChanged(--currentPage);
-          },
-          icon: Icon(Icons.arrow_back_ios),
-        ),
-        ...List.generate(5, (index) {
-          int pageNumber = index + 1;
-          return GestureDetector(
-            onTap: () => _onPageChanged(pageNumber),
-            child: Container(
-              margin: EdgeInsets.symmetric(horizontal: 2.0),
-              padding: EdgeInsets.all(12.0),
-              decoration: BoxDecoration(
-                color:
-                    currentPage == pageNumber
-                        ? Colors.purple
-                        : Colors.transparent,
-                borderRadius: BorderRadius.circular(50),
-                border: Border.all(
-                  color: Colors.brown,
-                  width: 1,
-                ),
-              ),
-              child: Text(
-                '$pageNumber',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color:
-                      currentPage == pageNumber
-                          ? Colors.white
-                          : Colors.brown,
-                ),
-              ),
-            ),
-          );
-        }),
-        SizedBox(width: 2),
-        IconButton(
-          onPressed: () {
-            _onPageChanged(++currentPage);
-          },
-          icon: Icon(Icons.arrow_forward_ios),
-        ),
-      ],
-    );
-  }
-}

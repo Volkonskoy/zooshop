@@ -4,9 +4,9 @@ import 'header.dart';
 import 'footer.dart';
 import 'auth_service.dart';
 import 'package:zooshop/models/Cart.dart';
-import 'package:zooshop/models/Product.dart';
 import 'package:provider/provider.dart';
-
+import 'package:zooshop/checkout_page.dart';
+import 'package:zooshop/cartProvider.dart';
 
 class CartPage extends StatefulWidget {
   @override
@@ -14,105 +14,90 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPageState extends State<CartPage> {
-  List<Cart> cartItems = [];
-
   @override
-Widget build(BuildContext context) {
-  final authProvider = Provider.of<AuthProvider>(context, listen: false);
-  final user = authProvider.user;
-  final screenWidth = MediaQuery.of(context).size.width;
+  Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final user = authProvider.user;
+    final screenWidth = MediaQuery.of(context).size.width;
 
-  if (user == null || user.id == null) {
-    return Scaffold(
-      body: Center(child: Text('Користувач не авторизований')),
-    );
-  }
-
-  return FutureBuilder<List<Cart>>(
-    future: fetchCartsByUserId(user.id!),
-    builder: (context, snapshot) {
-      if (snapshot.connectionState == ConnectionState.waiting) {
-        return Scaffold(
-          body: Center(child: CircularProgressIndicator()),
-        );
-      }
-
-      if (snapshot.hasError) {
-        return Scaffold(
-          body: Center(child: Text('Помилка: ${snapshot.error}')),
-        );
-      }
-
-      cartItems = snapshot.data ?? [];
-
+    if (user == null || user.id == null) {
       return Scaffold(
-        backgroundColor: Colors.white,
-        body: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Center(
-                child: SizedBox(
-                  width: screenWidth * 0.82,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      HeaderBlock(),
-                      SizedBox(height: 10),
+        body: Center(child: Text('Користувач не авторизований')),
+      );
+    }
 
-                      Padding(
-                        padding: EdgeInsets.only(left: 20, top: 20),
-                        child: Text(
-                          "Кошик",
-                          style: GoogleFonts.montserrat(
-                            fontSize: 36,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF95C74E),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 50),
+    return Consumer<CartProvider>(
+      builder: (context, cartProvider, _) {
+        final cartItems = cartProvider.items;
 
-                      Padding(
-                        padding: EdgeInsets.only(bottom: 50),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: cartItems.isNotEmpty
-                                    ? cartItems
-                                        .asMap()
-                                        .entries
-                                        .map((entry) => _buildCartItem(entry.value, entry.key))
-                                        .toList()
-                                    : [Text('Кошик порожній')],
+          return Scaffold(
+            backgroundColor: Colors.white,
+            body: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Center(
+                    child: SizedBox(
+                      width: screenWidth * 0.82,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          HeaderBlock(),
+                          SizedBox(height: 10),
+                          Padding(
+                            padding: EdgeInsets.only(left: 20, top: 20),
+                            child: Text(
+                              "Кошик",
+                              style: GoogleFonts.montserrat(
+                                fontSize: 36,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF95C74E),
                               ),
                             ),
-                            SizedBox(width: 50),
-                            _buildSummaryBlock(totalCost()),
-                          ],
-                        ),
+                          ),
+                          SizedBox(height: 50),
+                          Padding(
+                            padding: EdgeInsets.only(bottom: 50),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: cartItems.isNotEmpty
+                                        ? cartItems
+                                            .asMap()
+                                            .entries
+                                            .map((entry) => _buildCartItem(entry.value, entry.key))
+                                            .toList()
+                                        : [Text('Кошик порожній')],
+                                  ),
+                                ),
+                                SizedBox(width: 50),
+                                _buildSummaryBlock(context, cartProvider.totalPrice),
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: 77),
+                        ],
                       ),
-                      SizedBox(height: 77),
-                    ],
+                    ),
                   ),
-                ),
+                  FooterBlock(),
+                ],
               ),
-              FooterBlock(),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       );
-    },
-  );
-}
+    }
+
 
     
   Widget _buildCartItem(Cart cartItem, int index) {
 
   final item = cartItem.product;
+
 
   return Container(
     padding: EdgeInsets.all(16),
@@ -154,7 +139,7 @@ Widget build(BuildContext context) {
                       TextButton.icon(
                         onPressed: () {
                           setState(() {
-                            cartItems.removeAt(index);
+                            Provider.of<CartProvider>(context, listen: false).removeItem(item);
                           });
                         },
                         icon: Icon(Icons.delete, color: Color(0xFFF54949)),
@@ -164,60 +149,60 @@ Widget build(BuildContext context) {
                               color: Color(0xFFF54949), fontSize: 16),
                         ),
                       ),
-                      // SizedBox(width: 8),
-                      // TextButton.icon(
-                      //   onPressed: () {
-                      //     makeSubscription(context);
-                      //   },
-                      //   icon: Icon(Icons.refresh, color: Color(0xFF8DD048)),
-                      //   label: Text(
-                      //     'Замовляти повторно',
-                      //     style: TextStyle(
-                      //         color: Color(0xFF8DD048), fontSize: 16),
-                      //   ),
-                      // ),
-                      // Spacer(),
-                      // Container(
-                      //   decoration: BoxDecoration(
-                      //     border: Border.all(color: Colors.grey.shade400),
-                      //     borderRadius: BorderRadius.circular(8),
-                      //   ),
-                      //   padding: EdgeInsets.symmetric(horizontal: 8),
-                      //   child: Row(
-                      //     children: [
-                      //       IconButton(
-                      //         icon: Icon(Icons.remove),
-                      //         onPressed: () {
-                      //           setState(() {
-                      //             if (item.quantity > 1) item.quantity--;
-                      //           });
-                      //         },
-                      //         iconSize: 20,
-                      //         constraints: BoxConstraints(),
-                      //         padding: EdgeInsets.zero,
-                      //       ),
-                      //       Padding(
-                      //         padding:
-                      //             const EdgeInsets.symmetric(horizontal: 8.0),
-                      //         child: Text(
-                      //           '${item.quantity}',
-                      //           style: TextStyle(fontSize: 16),
-                      //         ),
-                      //       ),
-                      //       IconButton(
-                      //         icon: Icon(Icons.add),
-                      //         onPressed: () {
-                      //           setState(() {
-                      //             item.quantity++;
-                      //           });
-                      //         },
-                      //         iconSize: 20,
-                      //         constraints: BoxConstraints(),
-                      //         padding: EdgeInsets.zero,
-                      // //       ),
-                      //     ],
-                      //   ),
-                      // ),
+                      SizedBox(width: 8),
+                      TextButton.icon(
+                        onPressed: () {
+                          makeSubscription(context);
+                        },
+                        icon: Icon(Icons.refresh, color: Color(0xFF8DD048)),
+                        label: Text(
+                          'Замовляти повторно',
+                          style: TextStyle(
+                              color: Color(0xFF8DD048), fontSize: 16),
+                        ),
+                      ),
+                      Spacer(),
+                      Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey.shade400),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        padding: EdgeInsets.symmetric(horizontal: 8),
+                        child: Row(
+                          children: [
+                            IconButton(
+                              icon: Icon(Icons.remove),
+                              onPressed: () {
+                                setState(() {
+                                  if (cartItem.count > 1) Provider.of<CartProvider>(context, listen: false).changeQuantity(item, false);
+                                });
+                              },
+                              iconSize: 20,
+                              constraints: BoxConstraints(),
+                              padding: EdgeInsets.zero,
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8.0),
+                              child: Text(
+                                '${cartItem.count}',
+                                style: TextStyle(fontSize: 16),
+                              ),
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.add),
+                              onPressed: () {
+                                setState(() {
+                                  Provider.of<CartProvider>(context, listen: false).changeQuantity(item, true);
+                                });
+                              },
+                              iconSize: 20,
+                              constraints: BoxConstraints(),
+                              padding: EdgeInsets.zero,
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
 
@@ -273,20 +258,7 @@ Widget build(BuildContext context) {
     ),
   );
 }
-int totalCost(){
-  int total = 0;
-  
-  for (var cartItem in cartItems) {
-    int quantity = 1; 
-    // if (cartItem.quantity != null) {
-    //   quantity = cartItem.quantity;
-    // }
 
-    total += cartItem.product.price * quantity;
-  }
-  
-  return total;
-}
 
 }
 
@@ -308,7 +280,7 @@ int totalCost(){
 //   });
 // }
 
-Widget _buildSummaryBlock(int totalCost) {
+Widget _buildSummaryBlock(BuildContext context, int totalCost) {
   return Container(
     width: 350,
     padding: EdgeInsets.all(24),
@@ -322,14 +294,29 @@ Widget _buildSummaryBlock(int totalCost) {
       children: [
         ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: Color(0xFFC16AFF),  
+            backgroundColor: Color(0xFFC16AFF),
             shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5), 
-           ),),
-          
-          onPressed: () {},
-          child: Center(child: Text("Оформити замовлення", style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),)),
+              borderRadius: BorderRadius.circular(5),
+            ),
+          ),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => CheckoutPage()),
+            );
+          },
+          child: Center(
+            child: Text(
+              "Оформити замовлення",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
         ),
+
         SizedBox(height: 20),
         Text("4 товари", style: TextStyle(fontSize: 14)),
         Text("Доставка Новою Поштою: 50 ₴", style: TextStyle(fontSize: 14)),
@@ -338,13 +325,14 @@ Widget _buildSummaryBlock(int totalCost) {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text("Разом", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-            Text('${totalCost} ₴', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+            Text('${context.read<CartProvider>().totalPrice} ₴', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
           ],
         )
       ],
     ),
   );
 }
+
 
 
 

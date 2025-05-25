@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'header.dart';
 import 'footer.dart';
 import 'package:provider/provider.dart';
-import 'package:zooshop/orders_page.dart';
 import 'package:zooshop/subscription_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/gestures.dart';
 import 'auth_service.dart';
+import 'package:zooshop/models/Product.dart';
+import 'package:zooshop/cartProvider.dart';
 
 void main() {
   runApp(
@@ -26,6 +27,15 @@ void main() {
         ),
         ChangeNotifierProvider<AuthProvider>( 
           create: (_) => AuthProvider(),
+        ),
+        ChangeNotifierProxyProvider<AuthProvider, CartProvider>(
+          create: (_) => CartProvider(),
+          update: (_, authProvider, cartProvider) {
+            if (authProvider.isLoggedIn) {
+              cartProvider!.setUser(authProvider.user!.id!);
+            }
+            return cartProvider!;
+          },
         ),
       ],
       child: MyApp(),
@@ -51,19 +61,65 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MainPage extends StatelessWidget {
+class MainPage extends StatefulWidget {
   const MainPage({super.key});
+
+  @override
+  State<MainPage> createState() => _MainPageState();
+}
+
+class _MainPageState extends State<MainPage> {
+  List<ProductDTO> products = [];
+  bool isLoading = true;
+  String? error;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProducts();
+  }
+
+  Future<void> _loadProducts() async {
+    try {
+      final fetchedProducts = await fetchProducts();
+      setState(() {
+        products = fetchedProducts;
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        error = e.toString();
+        isLoading = false;
+      });
+      print('Помилка завантаження продуктів: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-      
+
+    if (isLoading) {
+      return Scaffold(
+        backgroundColor: Colors.white,
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (error != null) {
+      return Scaffold(
+        backgroundColor: Colors.white,
+        body: Center(child: Text('Помилка: $error')),
+      );
+    }
+
+    final salesProducts = products.where((p) => p.discountPercent != null).toList();
+    // final newProducts = products.where((p) => p.isNew).toList();
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
-        child: Column(
-      children: [
-        Center(
+        child: Center(
           child: SizedBox(
             width: screenWidth * 0.82,
             child: Column(
@@ -72,25 +128,24 @@ class MainPage extends StatelessWidget {
                 SizedBox(height: 50),
                 PromoVetCard(),
                 SizedBox(height: 50),
-                SalesBlock(),
+                SalesBlock(products: salesProducts),
                 SizedBox(height: 130),
                 PromoConsultCard(),
                 SizedBox(height: 100),
-                NewsBlock(),
+                NewsBlock(products: products),
                 SizedBox(height: 50),
                 BrandsBlock(),
                 SizedBox(height: 70),
+                FooterBlock(),
               ],
             ),
           ),
         ),
-        FooterBlock(),  
-      ],
-    ),
-  ),
-);
+      ),
+    );
   }
 }
+
 
 class PromoVetCard extends StatelessWidget {
   const PromoVetCard({super.key});
@@ -268,106 +323,96 @@ class PromoConsultCard extends StatelessWidget {
 }
 
 class SalesBlock extends StatelessWidget {
-  const SalesBlock({super.key});
+  final List<ProductDTO> products;
+
+  const SalesBlock({super.key, required this.products});
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment:
-                MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "Акції",
-                style: TextStyle(
-                  fontSize: 25,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Row(
-                spacing: 10,
-                children: [
-                  Text("Дивитись усе"),
-                  Icon(
-                    Icons.arrow_forward,
-                    color: Color(0xFF95C74E),
-                  ),
-                ],
-              ),
-            ],
+    final displayProducts = products.length > 5 ? products.sublist(0, 5) : products;
+
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              "Акції",
+              style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+            ),
+            Row(
+              children: [
+                Text("Дивитись усе"),
+                SizedBox(width: 10),
+                Icon(Icons.arrow_forward, color: Color(0xFF95C74E)),
+              ],
+            ),
+          ],
+        ),
+        SizedBox(height: 30),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: displayProducts.map((product) {
+              return Padding(
+                padding: const EdgeInsets.only(right: 20),
+                child: ProductCard(product: product),
+              );
+            }).toList(),
           ),
-          SizedBox(height: 30),
-          Row(
-            mainAxisAlignment:
-                MainAxisAlignment.spaceBetween,
-            children: [
-              ProductCard(),
-              ProductCard(),
-              ProductCard(),
-              ProductCard(),
-              ProductCard(),
-            ],
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
-
 class NewsBlock extends StatelessWidget {
-  const NewsBlock({super.key});
+  final List<ProductDTO> products;
+
+  const NewsBlock({super.key, required this.products});
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment:
-                MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "Новинки",
-                style: TextStyle(
-                  fontSize: 25,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Row(
-                spacing: 10,
-                children: [
-                  Text("Дивитись усе"),
-                  Icon(
-                    Icons.arrow_forward,
-                    color: Color(0xFF95C74E),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          SizedBox(height: 30),
-          Row(
-            mainAxisAlignment:
-                MainAxisAlignment.spaceBetween,
-            children: [
-              ProductCard(),
-              ProductCard(),
-              ProductCard(),
-              ProductCard(),
+    final displayProducts = products.length > 5 ? products.sublist(0, 5) : products;
 
-              ProductCard(),
-            ],
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              "Новинки",
+              style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+            ),
+            Row(
+              children: [
+                Text("Дивитись усе"),
+                SizedBox(width: 10),
+                Icon(Icons.arrow_forward, color: Color(0xFF95C74E)),
+              ],
+            ),
+          ],
+        ),
+        SizedBox(height: 30),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: displayProducts.map((product) {
+              return Padding(
+                padding: const EdgeInsets.only(right: 20),
+                child: ProductCard(product: product),
+              );
+            }).toList(),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
 
 class ProductCard extends StatelessWidget {
-  const ProductCard({super.key});
+  final ProductDTO product;
+
+  const ProductCard({super.key, required this.product});
 
   @override
   Widget build(BuildContext context) {
@@ -377,114 +422,98 @@ class ProductCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(4),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black26,
-            blurRadius: 4,
-            offset: Offset(0, 2),
-          ),
-        ],
+        boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 2))],
       ),
-      child: Column(
+      child: Stack(
+        clipBehavior: Clip.none,
         children: [
-          Align(
-            alignment: Alignment.topLeft,
-            child: Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: 8,
-                vertical: 4,
+          Column(
+            children: [
+              SizedBox(height: 18),
+              Image.network(
+                product.image,
+                height: 190,
+                width: 190,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) =>
+                    Icon(Icons.image_not_supported, size: 190),
               ),
-              decoration: BoxDecoration(
-                color: Color(0xFFF54949),
-                borderRadius: BorderRadius.circular(8),
+              SizedBox(height: 10),
+              Text(
+                product.name,
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
-              child: Text(
-                '-33%',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-          Image.asset(
-            'assets/images/product.png', 
-            height: 190,
-            width: 190,
-            fit: BoxFit.cover,
-          ),
-          SizedBox(height: 10),
-          Text(
-            'Brit Care Mono Protein вологий корм для собак 400 г - кролик',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        SizedBox(height: 75),
-          Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Padding(padding: EdgeInsets.only(left: 8),
-                 child:Text(
-                  '298 ₴',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w800,
-                    fontSize: 20,
-                  ),
-                ),
-                ),
-               
-                SizedBox(width: 8),
-                Text(
-                  '450 ₴',
-                  style: TextStyle(
-                    decoration: TextDecoration.lineThrough,
-                    color: Colors.grey,
-                    fontSize: 16,
-                  ),
-                ),
-              ],
-            ),
-          SizedBox(height: 10),
-          SizedBox(
-            width: double.infinity, 
-            height: 35,
-            child: ElevatedButton(
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      'Товар додано до кошика',
-                      style: TextStyle(color: Colors.white), 
+              SizedBox(height: 15),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(left: 8),
+                    child: Text(
+                      '${product.price} ₴',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 20,
+                        color: product.discountPercent != null ? Color(0xFFF54949) : Colors.black,
+                      ),
                     ),
-
-                    duration: Duration(seconds: 2),
-                    backgroundColor: Color(0xFF95C74E),
                   ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFFC16AFF), 
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(5), 
+                ],
+              ),
+              SizedBox(height: 10),
+              SizedBox(
+                width: double.infinity,
+                height: 35,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+                    if (authProvider.isLoggedIn) {
+                      Provider.of<CartProvider>(context, listen: false).addOrUpdateCartItem(product, context);
+                    } else {
+                      showRegisterDialog(context);
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFFC16AFF),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+                  ),
+                  child: Text('Купити', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
                 ),
               ),
-              child: Text('Купити', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),),
-            ),
-          ),
-         SizedBox(height: 10),
-          Padding(
-            padding: const EdgeInsets.only(top: 10), 
-            child: OneClickOrderText(),
+              SizedBox(height: 10),
+              Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: OneClickOrderText(),
+              ),
+            ],
           ),
 
+          if (product.discountPercent != null)
+            Positioned(
+              top: 0,
+              left: 0,
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Color(0xFFF54949),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  '-${product.discountPercent}%',
+                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                ),
+              ),
+            ),
         ],
       ),
     );
   }
 }
+
+
 
 class BrandsBlock extends StatelessWidget {
   const BrandsBlock({super.key});
