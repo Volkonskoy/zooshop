@@ -184,7 +184,7 @@ Widget build(BuildContext context) {
                       await clearCart(user.id!);
                       Provider.of<CartProvider>(context, listen: false).clear();
                       showOrderConfirmationDialog(context);
-                      
+
                     } catch (e) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text('Помилка при створенні замовлення')),
@@ -288,7 +288,6 @@ Widget build(BuildContext context) {
                   ),
                   SizedBox(height: 20),
 
-                  // Название
                   Text(
                     'Дякуємо за замовлення!',
                     style: TextStyle(
@@ -337,10 +336,6 @@ Widget build(BuildContext context) {
     },
   );
 }
-
-
-
-
 
 
 
