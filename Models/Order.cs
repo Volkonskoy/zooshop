@@ -11,5 +11,6 @@ namespace Zooshop.Models
         public int ProductId { get; set; }
         public string Date { get; set; }
         public string State { get; set; }
+        public int Count { get; set; }
     }
 }

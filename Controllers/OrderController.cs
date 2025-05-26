@@ -62,7 +62,8 @@ namespace Zooshop.Controllers
                 UserId = cartItem.UserId,
                 ProductId = cartItem.ProductId,
                 Date = currentDate,
-                State = state
+                State = state,
+                Count = cartItem.Count
             }).ToList();
 
             // Добавляем заказы в базу данных

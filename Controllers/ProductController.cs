@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using Zooshop.Data;
 using Zooshop.Models;
+using Marten.Util;
 
 namespace Zooshop.Controllers
 {
@@ -36,7 +37,8 @@ namespace Zooshop.Controllers
             // Фильтрация по Name, если он задан
             if (!string.IsNullOrEmpty(productDTO.Name))
             {
-                query = query.Where(p => p.Name.Contains(productDTO.Name));
+                String tempName = productDTO.Name.ToLower();
+                query = query.ToList().AsQueryable().Where(p => p.Name.ToLower().Contains(productDTO.Name.ToLower()));
             }
 
             // Фильтрация по диапазону цен (StartPrice и EndPrice)
