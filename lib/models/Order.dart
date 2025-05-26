@@ -11,6 +11,7 @@ class OrderDTO {
   final ProductDTO product;
   final String date;
   final String state;
+  final int count;
 
   Map<String, dynamic> toJson() {
     return {
@@ -19,7 +20,7 @@ class OrderDTO {
   }
 
   OrderDTO({this.id, required this.orderId, required this.userId, required this.product,
-  required this.date, required this.state});
+  required this.date, required this.state, required this.count});
 }
 
 Future<List<OrderDTO>> fetchOrdersByOrderId(int userId) async {
@@ -41,6 +42,7 @@ Future<List<OrderDTO>> fetchOrdersByOrderId(int userId) async {
         product: product,
         date: orderItem['date'],
         state: orderItem['state'],
+        count: orderItem['count']
       ));
     }
 
@@ -69,6 +71,7 @@ Future<List<OrderDTO>> fetchOrdersByUserId(int userId) async {
         product: product,
         date: orderItem['date'],
         state: orderItem['state'],
+        count: orderItem['count']
       ));
     }
 
@@ -94,5 +97,27 @@ Future<void> createOrder(int userid) async {
     print(response.body);
   } else {
     print('Не удалось создать очередь. Статус: ${response.statusCode}');
+  }
+}
+
+Future<void> updateOrderState(int orderId, String state) async {
+  final url = Uri.parse('https://localhost:7097/api/Order'); // Укажите правильный URL для вашего API
+
+  final response = await http.put(
+    url,
+    headers: {
+      'Content-Type': 'application/json', // Указываем тип данных, которые отправляем
+    },
+    body: json.encode({
+      'orderId': orderId,
+      'state': state
+    }),
+  );
+
+  if (response.statusCode == 200) {
+    print('Заказ успешно обновлен');
+    print(response.body);
+  } else {
+    print('Ошибка при обновлении заказа: ${response.statusCode}');
   }
 }

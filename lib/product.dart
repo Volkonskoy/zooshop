@@ -29,9 +29,9 @@ class ProductPage extends StatelessWidget {
                   children: [
                     HeaderBlock(),
                     SizedBox(height: 20),
-                    ProductBlock(),
-                    SizedBox(height: 30),
-                    DetailBlock(),
+                    ProductBlock(product: product),
+                    SizedBox(height: 50),
+                    DetailBlock(product: product),
                     SizedBox(height: 100),
                     RecomendationBlock(),
                     SizedBox(height: 70),
@@ -48,117 +48,77 @@ class ProductPage extends StatelessWidget {
 }
 
 class ProductBlock extends StatelessWidget {
-  const ProductBlock({super.key});
+  final ProductDTO product;
+
+  const ProductBlock({super.key, required this.product});
 
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Image(
-          width: 370,
-          height: 370,
-          image: AssetImage('assets/images/product.png'),
-          fit: BoxFit.cover,
-        ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Brit Care Mono Protein вологий корм для собак",
-              style: TextStyle(
-                color: const Color.fromARGB(
-                  255,
-                  69,
-                  50,
-                  43,
+        Expanded(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Image.network(
+                product.image,
+                width: 370,
+                height: 370,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) =>
+                    Icon(Icons.broken_image),
+              ),
+              SizedBox(width: 27),
+
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      product.name,
+                      style: TextStyle(
+                        color: Color.fromARGB(255, 69, 50, 43),
+                        fontSize: 25,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    Text("Код товару: ${product.id}", style: TextStyle(fontSize: 16)),
+                    SizedBox(height: 20),
+                    Row(
+                      children: [
+                        Text("Тип: ", style: TextStyle(fontSize: 16)),
+                        SizedBox(width: 5),
+                        Text(product.productCategory, style: TextStyle(fontSize: 16)),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Text("Категорія: ", style: TextStyle(fontSize: 16)),
+                        SizedBox(width: 5),
+                        Text(product.petCategory, style: TextStyle(fontSize: 16)),
+                      ],
+                    ),
+                  ],
                 ),
-                fontSize: 25,
-                fontWeight: FontWeight.w600,
               ),
-            ),
-            SizedBox(height: 50),
-            SizedBox(
-              width: 500,
-              child: Row(
-                mainAxisAlignment:
-                    MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start,
-                    children: [
-                      Text("Код товару: 13234"),
-                      SizedBox(height: 50),
-                      SizedBox(
-                        width: 200,
-                        child: Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment
-                                      .spaceBetween,
-                              children: [
-                                Text("Тип"),
-                                SizedBox(
-                                  width: 50,
-                                  child: Text("Корм"),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment
-                                      .spaceBetween,
-                              children: [
-                                Text("Виробник"),
-                                SizedBox(
-                                  width: 50,
-                                  child: Text("Brit"),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start,
-                    children: [
-                      PriceCard(
-                        oldPrice: "250",
-                        newPrice: "400",
-                      ),
-                      SizedBox(height: 20),
-                      Row(
-                        spacing: 10,
-                        children: [
-                          Icon(
-                            Icons.check,
-                            color: Colors.purpleAccent,
-                          ),
-                          Text(
-                            "Є на складі",
-                            style: TextStyle(
-                              color: Colors.purpleAccent,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
+            ],
+          ),
+        ),
+
+        PriceCard(
+          newPrice: product.price.toString(),
+          oldPrice: product.discountPercent != null
+              ? (product.price / (1 - product.discountPercent! / 100)).round().toString()
+              : product.price.toString(),
         ),
       ],
     );
+
   }
 }
+
 
 class PriceCard extends StatelessWidget {
   final String oldPrice;
@@ -191,7 +151,7 @@ class PriceCard extends StatelessWidget {
                   "$newPrice ₴",
                   style: TextStyle(
                     color: Color(0xFFF54949),
-                    fontSize: 24,
+                    fontSize: 28,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -203,7 +163,7 @@ class PriceCard extends StatelessWidget {
                   "$oldPrice ₴",
                   style: TextStyle(
                     color: Color(0xFF848992),
-                    fontSize: 16,
+                    fontSize: 18,
                     fontWeight: FontWeight.w900,
                     decoration: TextDecoration.lineThrough,
                   ),
@@ -228,13 +188,13 @@ class PriceCard extends StatelessWidget {
               ),
               child: Text(
                 "Купити",
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(color: Colors.white, fontSize: 16),
               ),
             ),
           ),
           SizedBox(height: 11),
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 27),
+            padding: EdgeInsets.symmetric(horizontal: 25),
             width: double.infinity,
             height: 40,
             child: OutlinedButton(
@@ -251,7 +211,7 @@ class PriceCard extends StatelessWidget {
                 ),
                 foregroundColor: Color(0xFF95C74E),
               ),
-              child: Text("Купити в один клік"),
+              child: Text("Купити в один клік", style: TextStyle(fontSize: 15)),
             ),
           ),
         ],
@@ -262,26 +222,26 @@ class PriceCard extends StatelessWidget {
 
 
 class DetailBlock extends StatefulWidget {
-  const DetailBlock({super.key});
+  final ProductDTO product;
+
+  const DetailBlock({super.key, required this.product});
 
   @override
   State<DetailBlock> createState() => _DetailBlockState();
 }
 
 class _DetailBlockState extends State<DetailBlock> {
-  int selectedIndex = 0; 
-
-  final descriptionText = "Корм для британських короткошерстих котів створений з урахуванням особливостей цієї породи. Кремезні та сильні тварини потребують раціону, який дасть змогу зміцнити їхні суглоби та підтримає роботу серця. Застосування british shorthair adult знижує ризик серцевих захворювань. Кількість жирів обмежена.";
-
-  final characteristicsText = "• Вага: 400 г\n• Вік: дорослі коти\n• Смак: кролик\n• Особливості: знижений рівень жирів, підтримка серця та суглобів";
+  int selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
+    final descriptionText = widget.product.desc;
+    final characteristicsText = "• Категорія: ${widget.product.petCategory}\n• Тип: ${widget.product.productCategory}";
 
     return Center(
       child: SizedBox(
-        width: screenWidth * (1 - 0.18),
+        width: screenWidth * 0.82,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -297,7 +257,7 @@ class _DetailBlockState extends State<DetailBlock> {
               width: 600,
               child: Text(
                 selectedIndex == 0 ? descriptionText : characteristicsText,
-                style: TextStyle(fontSize: 16, color: Colors.black87),
+                style: TextStyle(fontSize: 20, color: Colors.black87),
               ),
             ),
           ],
@@ -305,7 +265,6 @@ class _DetailBlockState extends State<DetailBlock> {
       ),
     );
   }
-
   Widget _buildTab(String text, int index) {
     final isSelected = selectedIndex == index;
 
@@ -330,7 +289,7 @@ class _DetailBlockState extends State<DetailBlock> {
           style: TextStyle(
             color: isSelected ? Colors.purpleAccent : Colors.grey[700],
             fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-            fontSize: 20,
+            fontSize: 18,
           ),
         ),
       ),

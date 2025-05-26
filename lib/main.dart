@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/gestures.dart';
 import 'auth_service.dart';
 import 'package:zooshop/models/Product.dart';
+import 'package:zooshop/product.dart';
 import 'package:zooshop/cartProvider.dart';
 
 void main() {
@@ -416,98 +417,131 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 200,
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(4),
-        boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 2))],
-      ),
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Column(
-            children: [
-              SizedBox(height: 18),
-              Image.network(
-                product.image,
-                height: 190,
-                width: 190,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) =>
-                    Icon(Icons.image_not_supported, size: 190),
-              ),
-              SizedBox(height: 10),
-              Text(
-                product.name,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              SizedBox(height: 15),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(left: 8),
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => ProductPage(product: product),
+            ),
+          );
+        },
+      child: Container(
+        width: 200,
+        padding: EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(4),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black26,
+              blurRadius: 4,
+              offset: Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Column(
+              children: [
+                SizedBox(height: 18),
+                Image.network(
+                  product.image,
+                  height: 190,
+                  width: 190,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) =>
+                      Icon(Icons.image_not_supported, size: 190),
+                ),
+                SizedBox(height: 10),
+                Text(
+                  product.name,
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                SizedBox(height: 15),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(left: 8),
+                      child: Text(
+                        '${product.price} ₴',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 20,
+                          color: product.discountPercent != null
+                              ? Color(0xFFF54949)
+                              : Colors.black,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 10),
+                SizedBox(
+                  width: double.infinity,
+                  height: 35,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+                      if (authProvider.isLoggedIn) {
+                        Provider.of<CartProvider>(context, listen: false)
+                            .addOrUpdateCartItem(product, context);
+                      } else {
+                        showRegisterDialog(context);
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFFC16AFF),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                    ),
                     child: Text(
-                      '${product.price} ₴',
+                      'Купити',
                       style: TextStyle(
-                        fontWeight: FontWeight.w800,
-                        fontSize: 20,
-                        color: product.discountPercent != null ? Color(0xFFF54949) : Colors.black,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
-                ],
-              ),
-              SizedBox(height: 10),
-              SizedBox(
-                width: double.infinity,
-                height: 35,
-                child: ElevatedButton(
-                  onPressed: () async {
-                    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-                    if (authProvider.isLoggedIn) {
-                      Provider.of<CartProvider>(context, listen: false).addOrUpdateCartItem(product, context);
-                    } else {
-                      showRegisterDialog(context);
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFC16AFF),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-                  ),
-                  child: Text('Купити', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
                 ),
-              ),
-              SizedBox(height: 10),
-              Padding(
-                padding: const EdgeInsets.only(top: 10),
-                child: OneClickOrderText(),
-              ),
-            ],
-          ),
-
-          if (product.discountPercent != null)
-            Positioned(
-              top: 0,
-              left: 0,
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Color(0xFFF54949),
-                  borderRadius: BorderRadius.circular(8),
+                SizedBox(height: 10),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: OneClickOrderText(),
                 ),
-                child: Text(
-                  '-${product.discountPercent}%',
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
-                ),
-              ),
+              ],
             ),
-        ],
+            if (product.discountPercent != null)
+              Positioned(
+                top: 0,
+                left: 0,
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Color(0xFFF54949),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    '-${product.discountPercent}%',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
       ),
     );
   }

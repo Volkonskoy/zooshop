@@ -15,6 +15,16 @@ class _OrdersPageState extends State<OrdersPage> {
   final int _ordersPerPage = 5;
   List<OrderDTO> orders = [];
 
+  // Функция для группировки заказов по orderId
+  Map<int, List<OrderDTO>> _groupOrdersByOrderId(List<OrderDTO> orders) {
+    Map<int, List<OrderDTO>> grouped = {};
+    for (var order in orders) {
+      grouped.putIfAbsent(order.orderId, () => []);
+      grouped[order.orderId]!.add(order);
+    }
+    return grouped;
+  }
+
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
@@ -38,13 +48,6 @@ class _OrdersPageState extends State<OrdersPage> {
         }
 
         orders = snapshot.data ?? [];
-        final totalPages = (orders.length / _ordersPerPage).ceil();
-        final startIndex = _currentPage * _ordersPerPage;
-        final endIndex = (_currentPage + 1) * _ordersPerPage;
-        final currentOrders = orders.sublist(
-          startIndex,
-          endIndex > orders.length ? orders.length : endIndex,
-        );
 
         if (orders.isEmpty) {
           return AccountLayout(
@@ -60,32 +63,47 @@ class _OrdersPageState extends State<OrdersPage> {
               ),
             ),
           );
-        } else {
-          return AccountLayout(
-            activeMenu: 'Історія замовлень',
-            child: Container(
-              padding: EdgeInsets.all(16),
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    ...currentOrders
-                        .asMap()
-                        .entries
-                        .map((entry) => _buildOrderCard(entry.value, entry.key))
-                        .toList(),
-                    SizedBox(height: 24),
-                    _buildPagination(totalPages),
-                  ],
-                ),
+        }
+
+        // Группируем по orderId
+        final groupedOrders = _groupOrdersByOrderId(orders);
+
+        // Получаем список orderId для пагинации
+        final allOrderIds = groupedOrders.keys.toList();
+
+        final totalPages = (allOrderIds.length / _ordersPerPage).ceil();
+        final startIndex = _currentPage * _ordersPerPage;
+        final endIndex = (_currentPage + 1) * _ordersPerPage;
+
+        // Отрезаем orderId для текущей страницы
+        final currentOrderIds = allOrderIds.sublist(
+          startIndex,
+          endIndex > allOrderIds.length ? allOrderIds.length : endIndex,
+        );
+
+        return AccountLayout(
+          activeMenu: 'Історія замовлень',
+          child: Container(
+            padding: EdgeInsets.all(16),
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  ...currentOrderIds.map((orderId) {
+                    final orderItems = groupedOrders[orderId]!;
+                    return _buildOrderCard(orderId, orderItems);
+                  }).toList(),
+
+                ],
               ),
             ),
-          );
-        }
+          ),
+        );
       },
     );
   }
 
-  void _confirmDelete(int index) {
+
+  void _confirmDelete(int orderId) {
 
   showDialog(
     context: context,
@@ -146,11 +164,10 @@ class _OrdersPageState extends State<OrdersPage> {
                         width: 145,
                         height: 40,
                         child: ElevatedButton(
-                          onPressed: () {
-                            // setState(() {
-                            //   orders.elementAt(index).state = 'Скасовано';
-                            // });
+                          onPressed: () async {
+                            await updateOrderState(orderId, 'Скасовано');
                             Navigator.pop(context);
+                            await _refreshOrders();
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color(0xFFF74E4E),
@@ -187,113 +204,130 @@ class _OrdersPageState extends State<OrdersPage> {
     );
   }
 
-  Widget _buildOrderCard(OrderDTO order, int index) {
-    Color statusColor;
-    final isCancellable = order.state == 'В обробці' || order.state == 'Не оплачен';
-    final canReorder = order.state == 'Скасовано' || order.state == 'Доставлено';
+  Future<void> _refreshOrders() async {
+  final authProvider = Provider.of<AuthProvider>(context, listen: false);
+  final user = authProvider.user;
+  if (user != null && user.id != null) {
+    final updatedOrders = await fetchOrdersByUserId(user.id!);
+    setState(() {
+      orders = updatedOrders;
+    });
+  }
+}
 
-    switch (order.state) {
-      case 'В обробці':
-        statusColor = Color(0xFF67AF45);
-        break;
-      case 'Доставлено':
-        statusColor = Color(0xFF67AF45);
-        break;
-      case 'Скасовано':
-        statusColor = Color(0xFFF54949);
-        break;
-      default:
-        statusColor = Colors.grey;
-    }
 
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 32),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              RichText(
-                text: TextSpan(
-                  style: GoogleFonts.montserrat(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF333333)),
-                  children: [
-                    TextSpan(text: 'Замовлення від  ' + order.date),
-                    TextSpan(
-                      text: '№${order.id}',
-                      style: TextStyle(
-                        fontWeight: FontWeight.normal,
-                        color: Color(0xFF848992),
-                        fontSize: 16
+  Widget _buildOrderCard(int orderId, List<OrderDTO> orderItems) {
+      final firstOrder = orderItems[0]; 
+
+      Color statusColor;
+      final isCancellable = firstOrder.state == 'В обробці' || firstOrder.state == 'Не оплачен';
+      final canReorder = firstOrder.state == 'Скасовано' || firstOrder.state == 'Доставлено';
+
+      switch (firstOrder.state) {
+        case 'В обробці':
+        case 'Доставлено':
+          statusColor = Color(0xFF67AF45);
+          break;
+        case 'Скасовано':
+          statusColor = Color(0xFFF54949);
+          break;
+        default:
+          statusColor = Colors.grey;
+      }
+
+      final totalCount = orderItems.fold(0, (sum, order) => sum + order.count);
+      final totalCost = orderItems.fold(0, (sum, order) => sum + order.product.price * order.count);
+
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 32),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                RichText(
+                  text: TextSpan(
+                    style: GoogleFonts.montserrat(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF333333)),
+                    children: [
+                      TextSpan(text: 'Замовлення від  ' + firstOrder.date + ' '),
+                      TextSpan(
+                        text: '№$orderId',
+                        style: TextStyle(
+                          fontWeight: FontWeight.normal,
+                          color: Color(0xFF848992),
+                          fontSize: 16,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
+                ),
+                Spacer(),
+                Text(
+                  firstOrder.state,
+                  style: TextStyle(
+                    color: statusColor,
+                    fontWeight: firstOrder.state == 'В обробці' ? FontWeight.w800 : FontWeight.w500,
+                    fontSize: 16,
+                  ),
+                ),
+                SizedBox(width: 24),
+                Text(
+                  '$totalCount товари',
+                  style: TextStyle(fontSize: 14),
+                ),
+                SizedBox(width: 24),
+                Text(
+                  '$totalCost ₴',
+                  style: TextStyle(fontWeight: FontWeight.w900, fontSize: 20),
+                ),
+              ],
+            ),
+            SizedBox(height: 13),
+            if (isCancellable)
+              TextButton.icon(
+                onPressed: () => _confirmDelete(orderId),
+                icon: Icon(Icons.close, color: Color(0xFFF54949)),
+                label: Text(
+                  'Скасувати замовлення',
+                  style: TextStyle(color: Color(0xFFF54949), fontSize: 16),
                 ),
               ),
-              Spacer(), 
-              Text(
-                order.state,
-                style: TextStyle(
-                  color: statusColor,
-                  fontWeight: order.state == 'В обробці' ? FontWeight.w800 : FontWeight.w500,
-                  fontSize: 16,
+            if (canReorder)
+              TextButton.icon(
+                onPressed: () => _confirmReorder(firstOrder),
+                icon: Icon(Icons.refresh, color: Color(0xFFFF8A00)),
+                label: Text(
+                  'Замовити ще раз',
+                  style: TextStyle(color: Color(0xFFFF8A00), fontSize: 16),
                 ),
               ),
-              SizedBox(width: 24),
-              Text(
-                '${countItemsInOrder(order.orderId)} товари',
-                style: TextStyle(fontSize: 14),
-              ),
-              SizedBox(width: 24),
-              Text(
-                '${totalCost()} ₴',
-                style: TextStyle(fontWeight: FontWeight.w900, fontSize: 20),
-              ),
-            ],
-          ),
-
-          SizedBox(height: 13),
-          if (isCancellable)
-          TextButton.icon(
-            onPressed: () => _confirmDelete(index),
-            icon: Icon(Icons.close, color: Color(0xFFF54949)),
-            label: Text(
-              'Скасувати замовлення',
-              style: TextStyle(color: Color(0xFFF54949), fontSize: 16),
-            ),
-          ),
-        if (canReorder)
-          TextButton.icon(
-            onPressed: () => _confirmReorder(order),
-            icon: Icon(Icons.refresh, color: Color(0xFFFF8A00)),
-            label: Text(
-              'Замовити ще раз',
-              style: TextStyle(color: Color(0xFFFF8A00), fontSize: 16),
-            ),
-          ),
-        Divider(height: 32),
-      ],
-      ),
-    );
-  }
-
-  int countItemsInOrder(int orderId ) {
-    return orders.where((order) => order.orderId == orderId).length;
-  }
-
-  int totalCost(){
-    int total = 0;
-    
-    for (var order in orders) {
-      int quantity = 1; 
-      // if (cartItem.quantity != null) {
-      //   quantity = cartItem.quantity;
-      // }
-
-      total += order.product.price * quantity;
+            Divider(height: 32),
+          ],
+        ),
+      );
     }
-    
+
+
+  int countItemsInOrder(int orderId) {
+    return orders
+        .where((order) => order.orderId == orderId)
+        .fold(0, (sum, order) => sum + order.count);
+  }
+
+
+  int totalCost(int orderId) {
+    int total = 0;
+
+    for (var order in orders) {
+      if (order.orderId == orderId) {
+        total += order.product.price * order.count;
+      }
+    }
+
     return total;
   }
+
+
 
   Widget _buildPagination(int totalPages) {
   return Row(

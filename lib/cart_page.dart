@@ -262,25 +262,11 @@ class _CartPageState extends State<CartPage> {
 
 }
 
-// class CartItem {
-//   final String name;
-//   final double price;
-//   final double? oldPrice;
-//   final String imageAsset;
-//   final bool available;
-//   int quantity;
-
-//   CartItem({
-//     required this.name,
-//     required this.price,
-//     this.oldPrice,
-//     required this.imageAsset,
-//     this.available = true,
-//     this.quantity = 1,
-//   });
-// }
 
 Widget _buildSummaryBlock(BuildContext context, int totalCost) {
+  final cartProvider = Provider.of<CartProvider>(context);
+  int count = cartProvider.totalCount;
+
   return Container(
     width: 350,
     padding: EdgeInsets.all(24),
@@ -318,7 +304,13 @@ Widget _buildSummaryBlock(BuildContext context, int totalCost) {
         ),
 
         SizedBox(height: 20),
-        Text("4 товари", style: TextStyle(fontSize: 14)),
+        
+
+        Text(
+          "$count ${pluralize(count, ['товар', 'товари', 'товарів'])}",
+          style: TextStyle(fontSize: 14),
+        ),
+
         Text("Доставка Новою Поштою: 50 ₴", style: TextStyle(fontSize: 14)),
         Divider(),
         Row(
@@ -333,6 +325,11 @@ Widget _buildSummaryBlock(BuildContext context, int totalCost) {
   );
 }
 
+String pluralize(int count, List<String> forms) {
+  if (count % 10 == 1 && count % 100 != 11) return forms[0];    
+  if (count % 10 >= 2 && count % 10 <= 4 && !(count % 100 >= 12 && count % 100 <= 14)) return forms[1]; 
+  return forms[2];                                              
+}
 
 
 

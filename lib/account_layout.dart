@@ -39,14 +39,24 @@ class _AccountLayoutState extends State<AccountLayout> {
     if (user != null) {
       try {
         List<OrderDTO> orders = await fetchOrdersByUserId(user.id!);
+        final Map<int, List<OrderDTO>> groupedOrders = {};
+        for (var order in orders) {
+          groupedOrders.putIfAbsent(order.orderId, () => []).add(order);
+        }
+
+        int activeOrdersCount = groupedOrders.entries.where((entry) {
+          return entry.value.any((order) => order.state != 'Скасовано');
+        }).length;
+
         setState(() {
-          ordersAmount = orders.where((o) => o.state != 'Скасовано').length;
+          ordersAmount = activeOrdersCount;
         });
       } catch (e) {
         print("Error fetching orders: $e");
       }
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
