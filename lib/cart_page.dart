@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:zooshop/models/Product.dart';
+import 'package:zooshop/models/Subscription.dart';
 import 'header.dart';
 import 'footer.dart';
 import 'auth_service.dart';
@@ -7,6 +9,7 @@ import 'package:zooshop/models/Cart.dart';
 import 'package:provider/provider.dart';
 import 'package:zooshop/checkout_page.dart';
 import 'package:zooshop/cartProvider.dart';
+import 'package:intl/intl.dart';
 
 class CartPage extends StatefulWidget {
   @override
@@ -152,7 +155,7 @@ class _CartPageState extends State<CartPage> {
                       SizedBox(width: 8),
                       TextButton.icon(
                         onPressed: () {
-                          makeSubscription(context);
+                          makeSubscription(context, item);
                         },
                         icon: Icon(Icons.refresh, color: Color(0xFF8DD048)),
                         label: Text(
@@ -333,7 +336,7 @@ String pluralize(int count, List<String> forms) {
 
 
 
-void makeSubscription(BuildContext context) {
+void makeSubscription(BuildContext context, ProductDTO product) {
   int selectedPeriod = 7;
 
   showDialog(
@@ -423,8 +426,23 @@ void makeSubscription(BuildContext context) {
                 child: Text('Скасувати', style: TextStyle(fontSize: 16)),
               ),
               ElevatedButton(
-                onPressed: () {
-                  print('Вибраний період: $selectedPeriod днів');
+                onPressed: () async {
+                  final authProvider =
+                      Provider.of<AuthProvider>(context, listen: false);
+                  final user = authProvider.user;
+
+                  final subscription = SubscriptionDTO(
+                    userId: user!.id!,
+                    product: product,
+                    deliveryFrequency: selectedPeriod,
+                    startDate: DateFormat('yyyy-MM-dd').format(DateTime.now()),
+
+                  );
+
+                  await createSubscription(subscription);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Підписка створена')),
+                  );
                   Navigator.pop(context);
                 },
                 style: ElevatedButton.styleFrom(

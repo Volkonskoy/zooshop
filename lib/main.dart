@@ -9,23 +9,13 @@ import 'auth_service.dart';
 import 'package:zooshop/models/Product.dart';
 import 'package:zooshop/product.dart';
 import 'package:zooshop/cartProvider.dart';
+import 'catalog.dart';
+
 
 void main() {
   runApp(
     MultiProvider(
       providers: [
-       
-        ChangeNotifierProvider<SubscriptionProvider>(
-          create: (_) {
-            final subscriptionProvider = SubscriptionProvider();
-            subscriptionProvider.loadFromDatabase([
-              Subscription(product: Product(id: 1, name: 'Savory Medium Breed сухий корм для собак 3 кг - індичка та ягня', price: 365, image: Image.asset('assets/images/image.png')), periodInDays: 7),
-              Subscription(product: Product(id: 2, name: 'Brit Care Mono Protein вологий корм для собак 400 г - кролик', price: 365, image: Image.asset('assets/images/image.png')), periodInDays: 7)
-
-            ]);
-            return subscriptionProvider;
-          }, 
-        ),
         ChangeNotifierProvider<AuthProvider>( 
           create: (_) => AuthProvider(),
         ),
@@ -190,7 +180,14 @@ class PromoVetCard extends StatelessWidget {
                   SizedBox(
                     height: 50,
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CatalogPage(searchQuery: "Шампунь"),
+                        ),
+                      );
+                    },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color(0xFFC16AFF),
                         shape: RoundedRectangleBorder(

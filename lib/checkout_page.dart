@@ -146,14 +146,14 @@ Widget build(BuildContext context) {
               Text(
                 'Сума замовлення: ',
                 style: GoogleFonts.montserrat(
-                  fontSize: 20,
+                  fontSize: 24,
                   fontWeight: FontWeight.w600,
                 ),
               ),
               Text(
                 '${Provider.of<CartProvider>(context, listen: false).totalPrice} ₴',
                 style: GoogleFonts.montserrat(
-                  fontSize: 20,
+                  fontSize: 24,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF67AF45),
                 ),
@@ -284,9 +284,9 @@ Widget build(BuildContext context) {
                 children: [
                   Image.asset(
                     'assets/images/logo.png', 
-                    height: 100,
+                    height: 200,
+                    width: 200,
                   ),
-                  SizedBox(height: 20),
 
                   Text(
                     'Дякуємо за замовлення!',

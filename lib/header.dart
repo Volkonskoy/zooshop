@@ -160,9 +160,52 @@ class MenuBottomNavigation extends StatelessWidget {
                   },
                   child: Text("Собаки", style: TextStyle(color: Colors.black)),
                 ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CatalogPage(animalType: "Гризуни"),
+                      ),
+                    );
+                  },
+                  child: Text("Гризуни", style: TextStyle(color: Colors.black)),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CatalogPage(animalType: "Птахи"),
+                      ),
+                    );
+                  },
+                  child: Text("Птахи", style: TextStyle(color: Colors.black)),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CatalogPage(animalType: "Риби"),
+                      ),
+                    );
+                  },
+                  child: Text("Риби", style: TextStyle(color: Colors.black)),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CatalogPage(animalType: "Рептилії"),
+                      ),
+                    );
+                  },
+                  child: Text("Рептилії", style: TextStyle(color: Colors.black)),
+                ),
               ],
             ),
-            SizedBox(width: 350),
             Row(
               spacing: 5,
               children: [
@@ -449,8 +492,7 @@ class _RegisterDialogState extends State<RegisterDialog> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Image.asset('assets/images/logo.png', height: 100),
-            SizedBox(height: 20),
+            Image.asset('assets/images/logo.png', height: 180, width: 180,),
             Text(
               _isLoginMode ? 'Вхід' : 'Реєстрація',
               style: TextStyle(

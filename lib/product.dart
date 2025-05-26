@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'header.dart';
 import 'footer.dart';
 import 'package:zooshop/main.dart';
-import 'catalog.dart' as catalogPage;
 import 'models/Product.dart';
-
+import 'main.dart' as mainPage;
 
 class ProductPage extends StatelessWidget {
     final ProductDTO product;
@@ -28,12 +27,14 @@ class ProductPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     HeaderBlock(),
-                    SizedBox(height: 20),
-                    ProductBlock(product: product),
+                    SizedBox(height: 15),
+                    Divider(),
                     SizedBox(height: 50),
-                    DetailBlock(product: product),
+                    ProductBlock(product: product),
                     SizedBox(height: 100),
-                    RecomendationBlock(),
+                    DetailBlock(product: product),
+                    SizedBox(height: 125),
+                    RecomendationBlock(product: product),
                     SizedBox(height: 70),
                   ],
                 ),
@@ -252,12 +253,12 @@ class _DetailBlockState extends State<DetailBlock> {
               ],
             ),
             Divider(height: 1, color: Colors.grey),
-            SizedBox(height: 20),
+            SizedBox(height: 30),
             SizedBox(
-              width: 600,
+              width: screenWidth * 0.82,
               child: Text(
                 selectedIndex == 0 ? descriptionText : characteristicsText,
-                style: TextStyle(fontSize: 20, color: Colors.black87),
+                style: TextStyle(fontSize: 18, color: Colors.black87),
               ),
             ),
           ],
@@ -289,7 +290,7 @@ class _DetailBlockState extends State<DetailBlock> {
           style: TextStyle(
             color: isSelected ? Colors.purpleAccent : Colors.grey[700],
             fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-            fontSize: 18,
+            fontSize: 23,
           ),
         ),
       ),
@@ -298,37 +299,64 @@ class _DetailBlockState extends State<DetailBlock> {
 }
 
 
-class RecomendationBlock extends StatelessWidget {
-  const RecomendationBlock({super.key});
+class RecomendationBlock extends StatefulWidget {
+  final ProductDTO product;
+
+  const RecomendationBlock({super.key, required this.product});
+
+  @override
+  State<RecomendationBlock> createState() => _RecomendationBlockState();
+}
+
+class _RecomendationBlockState extends State<RecomendationBlock> {
+  List<ProductDTO> similarProducts = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSimilar();
+  }
+
+  Future<void> _loadSimilar() async {
+    final products = await fetchSimilarProducts(widget.product);
+    setState(() {
+      similarProducts = products;
+      isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading) return CircularProgressIndicator();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Рекомендовані товари",
+          "Схожі товари",
           style: TextStyle(
             fontSize: 25,
             fontWeight: FontWeight.bold,
           ),
         ),
-        SizedBox(height: 56),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+        SizedBox(height: 30),
+        Wrap(
           spacing: 20,
-          children: [
-            //catalogPage.ProductCard(),
-            //catalogPage.ProductCard(),
-            //catalogPage.ProductCard(),
-            //catalogPage.ProductCard(),
-            //catalogPage.ProductCard()
-          ],
+          runSpacing: 20,
+          alignment: WrapAlignment.center,
+          children: similarProducts
+              .map((product) => SizedBox(
+                    width: 220,
+                    child: mainPage.ProductCard(product: product),
+                  ))
+              .toList(),
         ),
       ],
     );
   }
 }
+
 
 // class ProductCard extends StatelessWidget {
 //   const ProductCard({super.key});

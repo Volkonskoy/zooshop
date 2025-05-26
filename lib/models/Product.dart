@@ -83,4 +83,36 @@ Future<List<ProductDTO>> fetchProductsByFiltration({
   } else {
     throw Exception('Не удалось загрузить товары');
   }
+
+}
+
+Future<Map<String, List<String>>> fetchCategories() async {
+  final response = await http.get(Uri.parse('https://localhost:7097/api/Product/Categories'));
+
+  if (response.statusCode == 200) {
+    final data = json.decode(response.body);
+    return {
+      "productCategories": List<String>.from(data["productCategories"]),
+      "petCategories": List<String>.from(data["petCategories"]),
+    };
+  } else {
+    throw Exception("Не вдалося завантажити категорії");
+  }
+}
+
+Future<List<ProductDTO>> fetchSimilarProducts(ProductDTO product) async {
+  final byPet = await fetchProductsByFiltration(
+    petCategory: product.petCategory,
+  );
+
+  final byCategory = await fetchProductsByFiltration(
+    productCategory: product.productCategory,
+  );
+
+  final all = [...byPet, ...byCategory];
+  final unique = {
+    for (var p in all) p.id: p
+  }.values.toList();
+
+  return unique.where((p) => p.id != product.id).take(5).toList();
 }

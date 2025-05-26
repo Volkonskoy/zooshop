@@ -24,6 +24,8 @@ class _CatalogPageState extends State<CatalogPage> {
   final int _productsPerPage = 16;
   List<ProductDTO> products = [];
   bool isLoading = true;
+  List<String> petCategories = [];
+  Map<String, bool> productTypes = {};
 
   final TextEditingController _startPriceController = TextEditingController();
   final TextEditingController _endPriceController = TextEditingController();
@@ -31,21 +33,32 @@ class _CatalogPageState extends State<CatalogPage> {
   int? startPrice;
   int? endPrice;
 
-  Map<String, bool> productTypes = {
-    "Корм": false,
-    "Іграшки": false,
-    "Аксесуари": false,
-    "Ліки": false,
-  };
-
   String? searchQuery;
 
   @override
   void initState() {
     super.initState();
     searchQuery = widget.searchQuery;
-    _loadProducts();
+    _loadCategoriesAndProducts();
   }
+
+  Future<void> _loadCategoriesAndProducts() async {
+    try {
+      final categories = await fetchCategories();
+
+      setState(() {
+        productTypes = {
+          for (var cat in categories["productCategories"]!) cat: false,
+        };
+        petCategories = categories["petCategories"]!;
+      });
+
+      await _loadProducts();
+    } catch (e) {
+      print("Помилка завантаження категорій: $e");
+    }
+  }
+
 
   Future<void> _loadProducts() async {
     setState(() {
@@ -124,7 +137,7 @@ class _CatalogPageState extends State<CatalogPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           HeaderBlock(),
-                          SizedBox(height: 20),
+                          SizedBox(height: 55),
                           Padding(
                             padding: EdgeInsets.only(left: 20),
                             child: Text(
@@ -136,16 +149,21 @@ class _CatalogPageState extends State<CatalogPage> {
                               ),
                             ),
                           ),
-                          SizedBox(height: 40),
+                          SizedBox(height: 60),
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Padding(
-                              padding: EdgeInsets.only(left: 20, right:30),
+                              padding: EdgeInsets.only(left: 20),
                               child:_buildSettingsBlock(),),
                               Expanded(
-                                child: ProductsBlock(products: currentProducts), 
+                                child: Padding(
+                                  padding: EdgeInsets.only(left: 70), 
+                                  child: ProductsBlock(products: currentProducts),
+                                ),
                               ),
+
+
                             ],
                           ),
                           SizedBox(height: 24),
@@ -260,7 +278,7 @@ class _CatalogPageState extends State<CatalogPage> {
                 });
                 _loadProducts();
               },
-              activeColor: Colors.brown,
+              activeColor: Color(0xFFC16AFF),
               controlAffinity: ListTileControlAffinity.leading,
             );
           }).toList(),
@@ -321,52 +339,6 @@ class _CatalogPageState extends State<CatalogPage> {
     );
   }
 }
-
-// class SettingsBlock extends StatelessWidget {
-//   const SettingsBlock({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return SizedBox(
-//       width: 244,
-//       child: Column(
-//         children: [
-//           Column(
-//             crossAxisAlignment: CrossAxisAlignment.start,
-//             children: [
-//               Text("Ціна", style: TextStyle(fontSize: 25)),
-//               SizedBox(height: 20),
-//               Row(
-//                 spacing: 10,
-//                 children: [PriceFromTag(), PriceToTag()],
-//               ),
-//               SizedBox(height: 30),
-//               Text("Тип", style: TextStyle(fontSize: 25)),
-//               SizedBox(height: 20),
-//               ProductCheckbox(
-//                 productName: "Корм",
-//                 quantity: "345",
-//               ),
-//               ProductCheckbox(
-//                 productName: "Іграшки",
-//                 quantity: "233",
-//               ),
-//               ProductCheckbox(
-//                 productName: "Аксесуари",
-//                 quantity: "53",
-//               ),
-//               ProductCheckbox(
-//                 productName: "Ліки",
-//                 quantity: "12",
-//               ),
-//             ],
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-  
-// }
 
 
 class PriceFromTag extends StatelessWidget {
@@ -499,66 +471,6 @@ class PriceToTag extends StatelessWidget {
   }
 }
 
-class ProductCheckbox extends StatefulWidget {
-  final String productName; // Название товара
-  final String quantity; // Количество товара
-
-  // Конструктор для передачи данных
-  const ProductCheckbox({
-    Key? key,
-    required this.productName,
-    required this.quantity,
-  }) : super(key: key);
-
-  @override
-  _ProductCheckboxState createState() =>
-      _ProductCheckboxState();
-}
-
-class _ProductCheckboxState extends State<ProductCheckbox> {
-  bool isChecked = false; // Состояние чекбокса
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: Row(
-        children: [
-          Checkbox(
-            value: isChecked, // Значение чекбокса
-            onChanged: (bool? newValue) {
-              setState(() {
-                isChecked =
-                    newValue ??
-                    false; // Обновление состояния чекбокса
-              });
-            },
-          ),
-          SizedBox(width: 15),
-          Text(
-            widget
-                .productName, // Использование переданного названия товара
-            style: TextStyle(
-              color: Colors.brown, // Цвет текста
-              fontSize: 16, // Размер шрифта
-              fontWeight: FontWeight.bold, // Жирный текст
-            ),
-          ),
-          SizedBox(width: 8),
-          Text(
-            widget
-                .quantity, // Использование переданного количества товара
-            style: TextStyle(
-              color: Colors.grey, // Цвет числа
-              fontSize: 14, // Размер шрифта
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-
 class ProductsBlock extends StatelessWidget {
   final List<ProductDTO> products;
 
@@ -571,11 +483,11 @@ class ProductsBlock extends StatelessWidget {
     }
 
     return Wrap(
-      spacing: 10,       // горизонтальный отступ между карточками
-      runSpacing: 25,    // вертикальный отступ между строками
+      spacing: 10,  
+      runSpacing: 25,    
       children: products.map((product) {
         return SizedBox(
-          width: 220,    // фиксированная ширина карточки (как в ProductCard)
+          width: 220, 
           child: ProductCard(product: product),
         );
       }).toList(),

@@ -3,6 +3,8 @@ import 'package:zooshop/account_layout.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/gestures.dart';
+import 'package:zooshop/models/Subscription.dart';
+import 'auth_service.dart';
 
 class SubscriptionPage extends StatefulWidget {
   @override
@@ -10,190 +12,246 @@ class SubscriptionPage extends StatefulWidget {
 }
 
 class _SubscriptionPageState extends State<SubscriptionPage> {
+  List<SubscriptionDTO> subscriptions = [];
+  bool isLoading = true;
+  int _currentPage = 0;
+  final int _itemsPerPage = 5;
+
+  @override
+  void initState() {
+    super.initState();
+    loadSubscriptions();
+  }
+
+  Future<void> loadSubscriptions() async {
+    try {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final user = authProvider.user;
+      final fetched = await fetchSubscriptionsByUserId(user!.id!);
+      setState(() {
+        subscriptions = fetched;
+        isLoading = false;
+        _currentPage = 0;
+      });
+    } catch (e) {
+      print('Ошибка загрузки: $e');
+      setState(() => isLoading = false);
+    }
+  }
+
+  Future<void> updateFrequency(SubscriptionDTO subscription, int newPeriod) async {
+    try {
+      await updateSubscriptionFrequency(subscription.id!, newPeriod);
+      await loadSubscriptions();
+    } catch (e) {
+      print('Ошибка обновления частоты: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final subscriptions = context.watch<SubscriptionProvider>().subscriptions;
+    final totalPages = (subscriptions.length / _itemsPerPage).ceil();
+
+    final pagedSubscriptions = subscriptions.skip(_currentPage * _itemsPerPage).take(_itemsPerPage).toList();
+    
     return AccountLayout(
       activeMenu: 'Підписки',
       child: Container(
         padding: EdgeInsets.all(16),
         child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: subscriptions
-              .asMap()
-              .entries
-              .map((entry) => _buildSubscriptionCard(entry.value, entry.key))
-              .toList(),
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (isLoading)
+              Center(child: CircularProgressIndicator())
+            else if (subscriptions.isEmpty)
+              Center(child: Text('Підписок немає'))
+            else
+              ...pagedSubscriptions
+                .asMap()
+                .entries
+                .map((entry) => _buildSubscriptionCard(entry.value, entry.key))
+                .toList(),
+            SizedBox(height: 50),
+            if (totalPages >= 1) _buildPagination(totalPages),
+          ],
         ),
       ),
     );
   }
+  
+  Widget _buildPagination(int totalPages) {
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+    IconButton(
+        icon: Icon(Icons.chevron_left),
+        onPressed: _currentPage > 0
+            ? () {
+                setState(() {
+                  _currentPage--;
+                });
+              }
+            : null, 
+      ),
+    ...List.generate(totalPages, (index) {
+      final isActive = index == _currentPage;
+      return GestureDetector(
+        onTap: () {
+          setState(() {
+            _currentPage = index;
+          });
+        },
+        child: Container(
+          margin: EdgeInsets.symmetric(horizontal: 6),
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: BoxDecoration(
+            color: isActive ? Color(0xFFC16AFF) : const Color.fromARGB(255, 255, 255, 255),
+            borderRadius: BorderRadius.circular(30),
+          ),
+          child: Text(
+            '${index + 1}',
+            style: TextStyle(
+              color: isActive ? Colors.white : Colors.black,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      );
+    }),
+    
+    IconButton(
+        icon: Icon(Icons.chevron_right),
+        onPressed: _currentPage < totalPages - 1
+            ? () {
+                setState(() {
+                  _currentPage++;
+                });
+              }
+            : null, 
+      ),
+    ]
+  );
+}
 
-Widget _buildSubscriptionCard(Subscription subscription, int index) {
+Widget _buildSubscriptionCard(SubscriptionDTO subscription, int index) {
   return Padding(
-    padding: EdgeInsets.all(16),
+    padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16),
     child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Column (
-              children:[ SizedBox(
-                  width: 126,
-                  height: 126,
-                  child: subscription.product.image,
-                ),
-              ],
+            SizedBox(
+              width: 126,
+              height: 126,
+              child: Image.asset(subscription.product.image),
             ),
-            Expanded(
-              child: Column(
-                children:[
-                Text(
-                  subscription.product.name,
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.montserrat(
-                    fontSize: 17,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF333333),
-                  ),
-                ),
-                SizedBox(height: 29),
-                Row(
-                  children: [
-                  MouseRegion(
-                    cursor: SystemMouseCursors.click, 
-                    child: GestureDetector(
-                      onTap: () => _confirmDelete(index),
-                      child: Row(
-                        children: [
-                          Icon(Icons.delete, color: Color(0xFFF54949)),
-                          SizedBox(width: 4),
-                          Text(
-                            'Скасувати',
-                            style: TextStyle(
-                              color: Color(0xFFF54949),
-                              fontSize: 16,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Spacer(),
-                  Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey.shade400),
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Color(0xFF95C74E),
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          child: IconButton(
-                            icon: Icon(Icons.remove, color: Colors.white),
-                            onPressed: () {},
-                            iconSize: 20,
-                            padding: EdgeInsets.all(4),
-                            constraints: BoxConstraints(),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Text(
-                            '1 шт',
-                            style: TextStyle(fontSize: 14),
-                          ),
-                        ),
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Color(0xFF95C74E),
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          child: IconButton(
-                            icon: Icon(Icons.add, color: Colors.white),
-                            onPressed: () {},
-                            iconSize: 20,
-                            padding: EdgeInsets.all(4),
-                            constraints: BoxConstraints(),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
 
-                  ],
-                )
-              
-              ],
-              ),
-            ),
-            Spacer(),
-            Align(
-              alignment: Alignment.centerRight,
+            SizedBox(width: 16),
+
+            Expanded(
+              flex: 3,
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '${subscription.product.price.toStringAsFixed(0)} ₴',
+                    subscription.product.name,
                     style: GoogleFonts.montserrat(
-                      fontSize: 28,
-                      fontWeight: FontWeight.w800,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
                       color: Color(0xFF333333),
                     ),
                   ),
-                  Text.rich(
-                    TextSpan(
+                  SizedBox(height: 4),
+                  Text(
+                    subscription.product.desc ?? '',
+                    style: GoogleFonts.montserrat(
+                      fontSize: 14,
+                      color: Colors.brown[300],
+                    ),
+                  ),
+                  SizedBox(height: 30),
+                  MouseRegion(
+                    cursor: SystemMouseCursors.click, 
+                    child: GestureDetector(
+                    onTap: () => _confirmDelete(subscription),
+                    
+                    child: Row(
                       children: [
-                        TextSpan(
-                          text: 'раз на ',
-                          style: GoogleFonts.montserrat(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF333333),
+                        Icon(Icons.delete, color: Color(0xFFF54949), size: 20),
+                        SizedBox(width: 4),
+                        Text(
+                          'Скасувати',
+                          style: TextStyle(
+                            color: Color(0xFFF54949),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
                           ),
-                        ),
-                        TextSpan(
-                          text: subscription.periodInDays == 7
-                              ? 'тиждень'
-                              : subscription.periodInDays.toString(),
-                          style: GoogleFonts.montserrat(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFFC16AFF),
-                            decoration: TextDecoration.underline,
-                            decorationColor: Color(0xFFC16AFF),
-                          ),
-                          recognizer: TapGestureRecognizer()
-                            ..onTap = () {
-                              showSubscriptionDetails(context, subscription);
-                            },
                         ),
                       ],
                     ),
-                    textAlign: TextAlign.right,
+                  ),
                   ),
                 ],
               ),
             ),
-            
+
+            SizedBox(width: 16),
+
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  '${subscription.product.price.toStringAsFixed(0)} ₴',
+                  style: GoogleFonts.montserrat(
+                    fontSize: 26,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF333333),
+                  ),
+                ),
+                SizedBox(height: 4),
+                Text.rich(
+                  TextSpan(
+                    children: [
+                      TextSpan(
+                        text: 'раз ',
+                        style: GoogleFonts.montserrat(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w800,
+                          color: Color(0xFF333333),
+                        ),
+                      ),
+                      TextSpan(
+                        text: 'на тиждень',
+                        style: GoogleFonts.montserrat(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w800,
+                          decoration: TextDecoration.underline,
+                          decorationColor: Color(0xFFC16AFF),
+                          color: Color(0xFFC16AFF),
+                        ),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            showSubscriptionDetails(context, subscription);
+                          },
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
-        SizedBox(height: 10),
-        Divider(height: 35)
+        SizedBox(height: 30),
+        Divider(height: 1, color: Colors.grey[300]),
       ],
     ),
   );
 }
 
-void showSubscriptionDetails(BuildContext context, Subscription subscription) {
-  int selectedPeriod = subscription.periodInDays;
+
+void showSubscriptionDetails(BuildContext context, SubscriptionDTO subscription) {
+  int selectedPeriod = subscription.deliveryFrequency;
 
   showDialog(
     context: context,
@@ -250,8 +308,12 @@ void showSubscriptionDetails(BuildContext context, Subscription subscription) {
                   ),
                   RadioListTile<int>(
                     activeColor: Color(0xFF95C74E),
-                    title: Text('Раз в ${selectedPeriod == -1 ? subscription.periodInDays : selectedPeriod} днів', textAlign: TextAlign.center, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),),
-                    value: -1,
+                    title: Text(
+                      'Раз в 10 днів',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                    ),
+                    value: 10, 
                     groupValue: selectedPeriod,
                     onChanged: (val) => setState(() => selectedPeriod = val!),
                   ),
@@ -282,8 +344,17 @@ void showSubscriptionDetails(BuildContext context, Subscription subscription) {
                 child: Text('Скасувати', style: TextStyle(fontSize: 16)),
               ),
               ElevatedButton(
-                onPressed: () {
-                  print('Вибраний період: $selectedPeriod днів');
+                onPressed: () async {
+                  try {
+                    await updateSubscriptionFrequency(subscription.id!, selectedPeriod);
+                    await loadSubscriptions();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Підписку оновлено')),
+                  );;
+                  }catch (e) {
+                    print('Помилка оновлення: $e');
+                  }
+                  
                   Navigator.pop(context);
                 },
                 style: ElevatedButton.styleFrom(
@@ -306,11 +377,9 @@ void showSubscriptionDetails(BuildContext context, Subscription subscription) {
 }
 
 
+void _confirmDelete(SubscriptionDTO subscription) {
 
-void _confirmDelete(int index) {
-  final subscriptions = Provider.of<SubscriptionProvider>(context, listen: false).subscriptions;
-
-  showDialog(
+   showDialog(
     context: context,
     barrierDismissible: false,
     builder: (context) => Dialog(
@@ -369,10 +438,16 @@ void _confirmDelete(int index) {
                         width: 145,
                         height: 40,
                         child: ElevatedButton(
-                          onPressed: () {
-                            setState(() {
-                              subscriptions.elementAt(index).cancelled = true;
-                            });
+                          onPressed: () async {
+                            try {
+                              await deleteSubscriptionById(subscription.id!);
+                              await loadSubscriptions();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Підписку скасовано')),
+                              );
+                            } catch (e) {
+                              print('Помилка видалення: $e');
+                            }
                             Navigator.pop(context);
                           },
                           style: ElevatedButton.styleFrom(
@@ -412,55 +487,55 @@ void _confirmDelete(int index) {
 
 }
 
-class Product {
-  final int id;
-  final String name;
-  final double price;
-  final Image image;
+// class Product {
+//   final int id;
+//   final String name;
+//   final double price;
+//   final Image image;
 
-  Product({
-    required this.id,
-    required this.name,
-    required this.price,
-    required this.image
-  });
-}
+//   Product({
+//     required this.id,
+//     required this.name,
+//     required this.price,
+//     required this.image
+//   });
+// }
 
-class Subscription {
-  final Product product;
-  final int periodInDays;
-  final DateTime startDate;
-  bool cancelled;
+// class Subscription {
+//   final Product product;
+//   final int periodInDays;
+//   final DateTime startDate;
+//   bool cancelled;
 
-  Subscription({
-    required this.product,
-    this.periodInDays = 30,
-    DateTime? startDate,
-    this.cancelled = false
-  }) : startDate = startDate ?? DateTime.now();
+//   Subscription({
+//     required this.product,
+//     this.periodInDays = 30,
+//     DateTime? startDate,
+//     this.cancelled = false
+//   }) : startDate = startDate ?? DateTime.now();
 
-  DateTime get nextDeliveryDate => startDate.add(Duration(days: periodInDays));
-}
+//   DateTime get nextDeliveryDate => startDate.add(Duration(days: periodInDays));
+// }
 
-class SubscriptionProvider extends ChangeNotifier {
-  final List<Subscription> _subscriptions = [];
+// class SubscriptionProvider extends ChangeNotifier {
+//   final List<Subscription> _subscriptions = [];
 
-  List<Subscription> get subscriptions => List.unmodifiable(_subscriptions);
+//   List<Subscription> get subscriptions => List.unmodifiable(_subscriptions);
 
-  void addSubscription(Subscription sub) {
-    _subscriptions.add(sub);
-    notifyListeners();
-  }
+//   void addSubscription(Subscription sub) {
+//     _subscriptions.add(sub);
+//     notifyListeners();
+//   }
 
-  void removeSubscription(Subscription sub) {
-    _subscriptions.remove(sub);
-    notifyListeners();
-  }
+//   void removeSubscription(Subscription sub) {
+//     _subscriptions.remove(sub);
+//     notifyListeners();
+//   }
 
-  void loadFromDatabase(List<Subscription> loaded) {
-    _subscriptions.clear();
-    _subscriptions.addAll(loaded);
-    notifyListeners();
-  }
-}
+//   void loadFromDatabase(List<Subscription> loaded) {
+//     _subscriptions.clear();
+//     _subscriptions.addAll(loaded);
+//     notifyListeners();
+//   }
+// }
 

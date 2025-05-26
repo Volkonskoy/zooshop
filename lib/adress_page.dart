@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:zooshop/account_layout.dart';
-import 'package:zooshop/new_address_page.dart';
 import 'package:provider/provider.dart';
 import 'auth_service.dart';
 import 'package:zooshop/models/User.dart';

@@ -4,6 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'auth_service.dart';
 import 'package:zooshop/models/Order.dart';
+import 'package:zooshop/cartProvider.dart';
+import 'cart_page.dart';
 
 class OrdersPage extends StatefulWidget {
   @override
@@ -15,7 +17,6 @@ class _OrdersPageState extends State<OrdersPage> {
   final int _ordersPerPage = 5;
   List<OrderDTO> orders = [];
 
-  // Функция для группировки заказов по orderId
   Map<int, List<OrderDTO>> _groupOrdersByOrderId(List<OrderDTO> orders) {
     Map<int, List<OrderDTO>> grouped = {};
     for (var order in orders) {
@@ -65,17 +66,14 @@ class _OrdersPageState extends State<OrdersPage> {
           );
         }
 
-        // Группируем по orderId
         final groupedOrders = _groupOrdersByOrderId(orders);
 
-        // Получаем список orderId для пагинации
         final allOrderIds = groupedOrders.keys.toList();
 
         final totalPages = (allOrderIds.length / _ordersPerPage).ceil();
         final startIndex = _currentPage * _ordersPerPage;
         final endIndex = (_currentPage + 1) * _ordersPerPage;
 
-        // Отрезаем orderId для текущей страницы
         final currentOrderIds = allOrderIds.sublist(
           startIndex,
           endIndex > allOrderIds.length ? allOrderIds.length : endIndex,
@@ -92,12 +90,14 @@ class _OrdersPageState extends State<OrdersPage> {
                     final orderItems = groupedOrders[orderId]!;
                     return _buildOrderCard(orderId, orderItems);
                   }).toList(),
-
+                  SizedBox(height: 16),
+                  _buildPagination(totalPages),  
                 ],
               ),
             ),
           ),
         );
+
       },
     );
   }
@@ -433,12 +433,25 @@ class _OrdersPageState extends State<OrdersPage> {
                     width: 143,
                     height: 40,
                       child: ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         Navigator.pop(context);
+
+                        final cartProvider = Provider.of<CartProvider>(context, listen: false);
+                        final orderItems = orders.where((o) => o.orderId == order.orderId);
+
+                        for (var orderItem in orderItems) {
+                          for (int i = 0; i < orderItem.count; i++) {
+                            await cartProvider.addOrUpdateCartItem(orderItem.product, context);
+                          }
+                        }
+
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('Товари додано до кошика')),
                         );
+
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => CartPage()));
                       },
+
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color(0xFF8DC63F), 
                         shape: RoundedRectangleBorder(
