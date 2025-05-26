@@ -17,7 +17,7 @@ namespace Zooshop
                 options.AddPolicy("AllowAngular", policy =>
                 {
                     // –азрешаем запросы только с указанного источника: http://localhost:4200.
-                    policy.WithOrigins("http://localhost:53863")
+                    policy.WithOrigins("http://localhost:60610")
                         // –азрешаем любые HTTP-методы (GET, POST, PUT, DELETE и т.д.).
                         .AllowAnyMethod()
                         // –азрешаем любые заголовки в запросах (например, Content-Type, Authorization).

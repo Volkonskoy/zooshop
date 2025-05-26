@@ -72,11 +72,42 @@ namespace Zooshop.Controllers
 
             return Ok(orders); // Возвращаем список созданных заказов
         }
+
+        [HttpPut]
+        public IActionResult Update([FromBody] OrderUpdateDTO orderUpdateDTO)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var orderList = db.Orders.Where(o => o.OrderId == orderUpdateDTO.OrderId).ToList();
+
+            if (!orderList.Any())
+            {
+                return NotFound("Заказ не найден.");
+            }
+
+            foreach (var order in orderList)
+            {
+                order.State = orderUpdateDTO.State; // Устанавливаем новое значение для поля State
+            }
+
+            db.SaveChanges();
+            return Ok(orderList);
+        }
     }
 
     public class OrderDTO
     {
         [Required]
         public int UserId { get; set; }
+    }
+
+    public class OrderUpdateDTO
+    {
+        [Required]
+        public int OrderId { get; set; }
+        public string State { get; set; }
     }
 }
