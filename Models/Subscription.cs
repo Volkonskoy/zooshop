@@ -8,7 +8,7 @@ namespace Zooshop.Models
         [Required]
         public int UserId { get; set; }
         public int ProductId { get; set; }
-        public string DeliveryFrequency { get; set; }
+        public int DeliveryFrequency { get; set; }
         public string StartDate { get; set; }
     }
 }

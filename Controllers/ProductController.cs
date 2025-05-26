@@ -78,6 +78,31 @@ namespace Zooshop.Controllers
 
             return NotFound(); // Если товары не найдены, возвращаем 404
         }
+
+        [HttpGet("Categories")]
+        public IActionResult GetCategories()
+        {
+            var productCategories = db.Products
+                .Select(p => p.ProductCategory)
+                .Distinct()
+                .Where(c => !string.IsNullOrEmpty(c))
+                .ToList();
+
+            var petCategories = db.Products
+                .Select(p => p.PetCategory)
+                .Distinct()
+                .Where(c => !string.IsNullOrEmpty(c))
+                .ToList();
+
+            var result = new
+            {
+                ProductCategories = productCategories,
+                PetCategories = petCategories
+            };
+
+            return Ok(result);
+        }
+
     }
 }
 
