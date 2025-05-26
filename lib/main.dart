@@ -478,6 +478,17 @@ class ProductCard extends StatelessWidget {
                         ),
                       ),
                     ),
+                    if (product.discountPercent != null) ...[
+                      SizedBox(width: 10),
+                      Text(
+                        '${(product.price / (1 - product.discountPercent! / 100)).round()} ₴',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey,
+                          decoration: TextDecoration.lineThrough,
+                        ),
+                      ),
+                    ],
                   ],
                 ),
                 SizedBox(height: 10),
