@@ -48,6 +48,8 @@ namespace Zooshop.Controllers
                         order.State = "Оплачено"; // Устанавливаем новое значение для поля State
                     }
                 }
+                db.SaveChanges();
+
             }
             else
             {

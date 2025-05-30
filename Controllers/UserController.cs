@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Zooshop.Data;
 using Zooshop.Models;
+using Google.Apis.Auth;
 
 namespace Zooshop.Controllers
 {
@@ -55,6 +56,38 @@ namespace Zooshop.Controllers
             storedUser.Address = user.Address;
             db.SaveChanges();
             return Ok(storedUser);
+        }
+
+        [HttpPost("google-signin")]
+        public async Task<IActionResult> GoogleSignIn([FromBody] string idToken)
+        {
+            try
+            {
+                var payload = await GoogleJsonWebSignature.ValidateAsync(idToken);
+
+                var user = db.Users.SingleOrDefault(u => u.Email == payload.Email);
+
+                if (user == null)
+                {
+                    user = new User
+                    {
+                        Name = payload.Name,
+                        Email = payload.Email,
+                        GoogleId = payload.Subject,
+                        Password = "",
+                        Address = ""
+                    };
+
+                    db.Users.Add(user);
+                    db.SaveChanges();
+                }
+
+                return Ok(user);
+            }
+            catch (InvalidJwtException ex)
+            {
+                return Unauthorized(new { error = "Invalid Google token", details = ex.Message });
+            }
         }
     }
 }
