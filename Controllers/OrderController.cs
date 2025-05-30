@@ -70,7 +70,7 @@ namespace Zooshop.Controllers
             db.Orders.AddRange(orders);
             db.SaveChanges();
 
-            return Ok(orders); // Возвращаем список созданных заказов
+            return Ok(orderId); // Возвращаем список созданных заказов
         }
 
         [HttpPut]

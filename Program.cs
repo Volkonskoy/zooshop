@@ -17,7 +17,7 @@ namespace Zooshop
                 options.AddPolicy("AllowAngular", policy =>
                 {
                     // –азрешаем запросы только с указанного источника: http://localhost:4200.
-                    policy.WithOrigins("http://localhost:50258")
+                    policy.WithOrigins("https://zooshop-61f32.firebaseapp.com")
                         // –азрешаем любые HTTP-методы (GET, POST, PUT, DELETE и т.д.).
                         .AllowAnyMethod()
                         // –азрешаем любые заголовки в запросах (например, Content-Type, Authorization).
@@ -27,11 +27,8 @@ namespace Zooshop
                 });
             });
 
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-            connectionString = connectionString.Replace("|DataDirectory|", AppDomain.CurrentDomain.BaseDirectory);
-
             builder.Services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlite(connectionString));
+                options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
