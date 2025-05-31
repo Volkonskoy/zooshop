@@ -353,6 +353,38 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "Zooshop.Controllers.UserController",
+    "Method": "GoogleSignIn",
+    "RelativePath": "api/User/google-signin",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "idToken",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Zooshop.Controllers.WebhookController",
+    "Method": "Post",
+    "RelativePath": "api/Webhook",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "payload",
+        "Type": "System.Text.Json.JsonElement",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "Zooshop.Controllers.WeatherForecastController",
     "Method": "Get",
     "RelativePath": "WeatherForecast",

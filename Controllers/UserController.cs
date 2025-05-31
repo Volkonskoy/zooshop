@@ -74,7 +74,7 @@ namespace Zooshop.Controllers
                         Name = payload.Name,
                         Email = payload.Email,
                         GoogleId = payload.Subject,
-                        Password = "",
+                        Password = Guid.NewGuid().ToString(),
                         Address = ""
                     };
 

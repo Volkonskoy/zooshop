@@ -661,3 +661,8 @@ C:\Users\48575\Desktop\C#\zooshop\bin\Debug\net8.0\ru\Microsoft.CodeAnalysis.Vis
 C:\Users\48575\Desktop\C#\zooshop\bin\Debug\net8.0\tr\Microsoft.CodeAnalysis.VisualBasic.Workspaces.resources.dll
 C:\Users\48575\Desktop\C#\zooshop\bin\Debug\net8.0\zh-Hans\Microsoft.CodeAnalysis.VisualBasic.Workspaces.resources.dll
 C:\Users\48575\Desktop\C#\zooshop\bin\Debug\net8.0\zh-Hant\Microsoft.CodeAnalysis.VisualBasic.Workspaces.resources.dll
+C:\Users\ingil\OneDrive\Desktop\university\zooshop\bin\Debug\net8.0\Google.Apis.dll
+C:\Users\ingil\OneDrive\Desktop\university\zooshop\bin\Debug\net8.0\Google.Apis.Auth.dll
+C:\Users\ingil\OneDrive\Desktop\university\zooshop\bin\Debug\net8.0\Google.Apis.Core.dll
+C:\Users\ingil\OneDrive\Desktop\university\zooshop\bin\Debug\net8.0\System.Management.dll
+C:\Users\ingil\OneDrive\Desktop\university\zooshop\bin\Debug\net8.0\runtimes\win\lib\net7.0\System.Management.dll
