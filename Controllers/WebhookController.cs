@@ -41,7 +41,7 @@ namespace Zooshop.Controllers
 
                 if (!cartItems.Any())
                 {
-                    return BadRequest("Корзина пуста.");
+                    return BadRequest("Кошик порожній.");
                 }
 
                 var lastOrder = db.Orders.Where(o => o.UserId == userId).OrderByDescending(o => o.OrderId).FirstOrDefault();

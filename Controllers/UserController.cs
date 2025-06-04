@@ -12,7 +12,7 @@ namespace Zooshop.Controllers
 
         public UserController(AppDbContext context)
         {
-            db = context; //Создаём экземпляр дб контекста для операций с бд
+            db = context; 
         }
 
         [HttpGet("{Email}, {Password}")]
@@ -24,10 +24,10 @@ namespace Zooshop.Controllers
             return Ok(user);
         }
 
-        [HttpPost] //Этот запрос выполняется когда уже известны все атрибуты класса, тоесть они переданы прямо
+        [HttpPost] 
         public IActionResult Post([FromBody] User user)
         {
-            if (!ModelState.IsValid) //Проверяет атрибуты Required
+            if (!ModelState.IsValid) 
             {
                 return BadRequest(ModelState);
             }
@@ -43,7 +43,7 @@ namespace Zooshop.Controllers
         [HttpPut]
         public ActionResult Put([FromBody] User user)
         {
-            if (!ModelState.IsValid) //Проверяет атрибуты Required
+            if (!ModelState.IsValid) 
             {
                 return BadRequest(ModelState);
             }

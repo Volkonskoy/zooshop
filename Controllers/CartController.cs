@@ -11,7 +11,7 @@ namespace Zooshop.Controllers
 
         public CartController(AppDbContext context)
         {
-            db = context; //Создаём экземпляр дб контекста для операций с бд
+            db = context;
         }
 
         [HttpGet("{id}")]
@@ -23,10 +23,10 @@ namespace Zooshop.Controllers
             return Ok(cart);
         }
 
-        [HttpPost] //Этот запрос выполняется когда уже известны все атрибуты класса, тоесть они переданы прямо
+        [HttpPost]
         public IActionResult Post([FromBody] Cart cart)
         {
-            if (!ModelState.IsValid) //Проверяет атрибуты Required
+            if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
@@ -50,37 +50,37 @@ namespace Zooshop.Controllers
         [HttpDelete("DeleteProduct/{userId}/{productId}")]
         public IActionResult Delete(int userId, int productId)
         {
-            // Находим товар в корзине для указанного UserId и ProductId
+            
             var cartItem = db.Carts.SingleOrDefault(c => c.UserId == userId && c.ProductId == productId);
 
-            // Если товар не найден, возвращаем ошибку NotFound
+            
             if (cartItem == null)
             {
-                return NotFound("Товар не найден в корзине.");
+                return NotFound("Товар не знайдено у кошику.");
             }
 
-            // Удаляем найденный товар из корзины
+            
             db.Carts.Remove(cartItem);
-            db.SaveChanges(); // Сохраняем изменения в базе данных
+            db.SaveChanges();
 
-            return Ok("Товар успешно удален из корзины.");
+            return Ok("Товар успішно видалено з кошику.");
         }
 
         [HttpDelete("ClearCart/{userId}")]
         public IActionResult ClearCart(int userId)
         {
-            // Получаем все товары из корзины для указанного UserId
+            
             var cartItems = db.Carts.Where(c => c.UserId == userId).ToList();
 
-            // Если корзина пуста, возвращаем ошибку NotFound
+            
             if (!cartItems.Any())
             {
-                return NotFound("Корзина пуста.");
+                return NotFound("Кошик порожній.");
             }
 
-            // Удаляем все товары из корзины для этого пользователя
+            
             db.Carts.RemoveRange(cartItems);
-            db.SaveChanges(); // Сохраняем изменения в базе данных
+            db.SaveChanges(); 
 
             return Ok("Корзина успешно очищена.");
         }
@@ -97,7 +97,7 @@ namespace Zooshop.Controllers
 
             if (cartItem == null)
             {
-                return NotFound("Товар не найден в корзине.");
+                return NotFound("Товар не знайдено в кошику.");
             }
 
             cartItem.Count = updatedCart.Count;

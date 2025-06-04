@@ -42,7 +42,7 @@ namespace Zooshop.Controllers
 
             if (!cartItems.Any())
             {
-                return BadRequest("Корзина пуста.");
+                return BadRequest("Кошик порожній.");
             }
 
             var lastOrder = db.Orders.Where(o => o.UserId == userId).OrderByDescending(o => o.OrderId).FirstOrDefault();
@@ -80,7 +80,7 @@ namespace Zooshop.Controllers
 
             if (!orderList.Any())
             {
-                return NotFound("Заказ не найден.");
+                return NotFound("Замовлення не знайдено.");
             }
 
             foreach (var order in orderList)

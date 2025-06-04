@@ -12,7 +12,7 @@ namespace Zooshop.Controllers
 
         public SubscriptionController(AppDbContext context)
         {
-            db = context; //Создаём экземпляр дб контекста для операций с бд
+            db = context;
         }
 
         [HttpGet("user{id}")]

@@ -13,16 +13,16 @@ namespace Zooshop
 
             builder.Services.AddCors(options =>
             {
-                // Добавляем именованную политику CORS с названием "AllowAngular".
+                
                 options.AddPolicy("AllowAngular", policy =>
                 {
-                    // Разрешаем запросы только с указанного источника: http://localhost:4200.
+                    
                     policy.WithOrigins("https://zooshop-61f32.firebaseapp.com")
-                        // Разрешаем любые HTTP-методы (GET, POST, PUT, DELETE и т.д.).
+                        
                         .AllowAnyMethod()
-                        // Разрешаем любые заголовки в запросах (например, Content-Type, Authorization).
+                        
                         .AllowAnyHeader()
-                        // Разрешаем отправку учётных данных (например, cookies, HTTP-аутентификация).
+                        
                         .AllowCredentials();
                 });
             });
