@@ -12,7 +12,7 @@ namespace Zooshop.Controllers
 
         public OrderController(AppDbContext context)
         {
-            db = context; //Создаём экземпляр дб контекста для операций с бд
+            db = context;
         }
 
         [HttpGet("{id}")]
@@ -38,7 +38,6 @@ namespace Zooshop.Controllers
         {
             int userId = order.UserId;
 
-            // Получаем все товары из корзины для указанного пользователя
             var cartItems = db.Carts.Where(c => c.UserId == userId).ToList();
 
             if (!cartItems.Any())
@@ -46,19 +45,16 @@ namespace Zooshop.Controllers
                 return BadRequest("Корзина пуста.");
             }
 
-            // Получаем последний OrderId для данного пользователя (если есть)
             var lastOrder = db.Orders.Where(o => o.UserId == userId).OrderByDescending(o => o.OrderId).FirstOrDefault();
 
-            // Если заказов нет, то OrderId будет 1, иначе увеличиваем на 1
             int orderId = lastOrder != null ? lastOrder.OrderId + 1 : 1;
 
             var currentDate = DateTime.Now.ToString("yyyy-MM-dd");
-            var state = "Не оплачен";
+            var state = "Не сплачено";
 
-            // Создаем список заказов для всех товаров в корзине
             var orders = cartItems.Select(cartItem => new Order
             {
-                OrderId = orderId, // Генерируем OrderId вручную, увеличиваем на 1 для каждого заказа
+                OrderId = orderId,
                 UserId = cartItem.UserId,
                 ProductId = cartItem.ProductId,
                 Date = currentDate,
@@ -66,11 +62,10 @@ namespace Zooshop.Controllers
                 Count = cartItem.Count
             }).ToList();
 
-            // Добавляем заказы в базу данных
             db.Orders.AddRange(orders);
             db.SaveChanges();
 
-            return Ok(orderId); // Возвращаем список созданных заказов
+            return Ok(orderId);
         }
 
         [HttpPut]
@@ -90,7 +85,7 @@ namespace Zooshop.Controllers
 
             foreach (var order in orderList)
             {
-                order.State = orderUpdateDTO.State; // Устанавливаем новое значение для поля State
+                order.State = orderUpdateDTO.State;
             }
 
             db.SaveChanges();

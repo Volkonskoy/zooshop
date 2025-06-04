@@ -26,37 +26,51 @@ namespace Zooshop.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] JsonElement payload)
         {
-            // Выводим тело запроса в лог (или сохраняем)
             Console.WriteLine("Webhook received: " + payload.ToString());
 
-            // Можно извлекать данные так:
             var invoiceId = payload.GetProperty("invoiceId").GetString();
             var status = payload.GetProperty("status").GetString();
 
-            // Тут ваша логика — например, отметить в БД, что платёж прошёл
             if (status == "success")
             {
                 Console.WriteLine($"Invoice {invoiceId} was successfully paid.");
-                int orderId;
-                //JsonElement merchantPaymInfo = payload.GetProperty("merchantPaymInfo");
-                int.TryParse(payload.GetProperty("reference").GetString(), out orderId);
-                var orderList = db.Orders.Where(o => o.OrderId == orderId).ToList();
-                if(orderList != null)
-                {
-                    foreach (var order in orderList)
-                    {
-                        order.State = "Оплачено"; // Устанавливаем новое значение для поля State
-                    }
-                }
-                db.SaveChanges();
+                int userId;
+                int.TryParse(payload.GetProperty("reference").GetString(), out userId);
 
+                var cartItems = db.Carts.Where(c => c.UserId == userId).ToList();
+
+                if (!cartItems.Any())
+                {
+                    return BadRequest("Корзина пуста.");
+                }
+
+                var lastOrder = db.Orders.Where(o => o.UserId == userId).OrderByDescending(o => o.OrderId).FirstOrDefault();
+
+                int orderId = lastOrder != null ? lastOrder.OrderId + 1 : 1;
+
+                var currentDate = DateTime.Now.ToString("yyyy-MM-dd");
+                var state = "Сплачено";
+
+                var orders = cartItems.Select(cartItem => new Order
+                {
+                    OrderId = orderId,
+                    UserId = cartItem.UserId,
+                    ProductId = cartItem.ProductId,
+                    Date = currentDate,
+                    State = state,
+                    Count = cartItem.Count
+                }).ToList();
+
+                db.Orders.AddRange(orders);
+                db.Carts.RemoveRange(cartItems);
+                db.SaveChanges();
             }
             else
             {
                 Console.WriteLine($"Invoice {invoiceId} was ERROR");
             }
 
-            return Ok(); // Monobank ожидает 200 OK
+            return Ok();
         }
     }
 }

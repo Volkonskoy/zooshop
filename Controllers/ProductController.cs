@@ -4,6 +4,8 @@ using System.ComponentModel.DataAnnotations;
 using Zooshop.Data;
 using Zooshop.Models;
 using Marten.Util;
+using LinqKit;
+using Polly;
 
 namespace Zooshop.Controllers
 {
@@ -14,7 +16,7 @@ namespace Zooshop.Controllers
 
         public ProductController(AppDbContext context)
         {
-            db = context; //Создаём экземпляр дб контекста для операций с бд
+            db = context;
         }
 
         [HttpGet]
@@ -32,51 +34,55 @@ namespace Zooshop.Controllers
         [HttpGet("Filtration")]
         public IActionResult Get([FromQuery] ProductDTO productDTO)
         {
-            var query = db.Products.AsQueryable(); // Начинаем с запроса ко всем товарам
+            var query = db.Products.AsQueryable();
 
-            // Фильтрация по Name, если он задан
             if (!string.IsNullOrEmpty(productDTO.Name))
             {
                 String tempName = productDTO.Name.ToLower();
                 query = query.ToList().AsQueryable().Where(p => p.Name.ToLower().Contains(productDTO.Name.ToLower()));
             }
 
-            // Фильтрация по диапазону цен (StartPrice и EndPrice)
             if (productDTO.StartPrice.HasValue && productDTO.EndPrice.HasValue)
             {
                 query = query.Where(p => p.Price >= productDTO.StartPrice.Value && p.Price <= productDTO.EndPrice.Value);
             }
-            // Если указан только StartPrice, фильтруем по минимальной цене
             else if (productDTO.StartPrice.HasValue)
             {
                 query = query.Where(p => p.Price >= productDTO.StartPrice.Value);
             }
-            // Если указан только EndPrice, фильтруем по максимальной цене
             else if (productDTO.EndPrice.HasValue)
             {
                 query = query.Where(p => p.Price <= productDTO.EndPrice.Value);
             }
 
-            // Фильтрация по PetCategory, если она задана
             if (!string.IsNullOrEmpty(productDTO.PetCategory))
             {
                 query = query.Where(p => p.PetCategory.Contains(productDTO.PetCategory));
             }
 
-            // Фильтрация по ProductCategory, если она задана
             if (!string.IsNullOrEmpty(productDTO.ProductCategory))
             {
-                query = query.Where(p => p.ProductCategory.Contains(productDTO.ProductCategory));
+                var categories = productDTO.ProductCategory.Split(',')
+                                              .Select(c => c.Trim())
+                                              .ToArray();
+                var predicate = LinqKit.PredicateBuilder.New<Product>(p => false);
+
+                foreach (var category in categories)
+                {
+                    predicate = predicate.Or(p => p.ProductCategory.Contains(category));
+                }
+
+                query = query.Where(predicate);
             }
 
-            var products = query.ToList(); // Выполняем запрос и получаем товары
+            var products = query.ToList();
 
             if (products.Any())
             {
-                return Ok(products); // Возвращаем найденные товары
+                return Ok(products);
             }
 
-            return NotFound(); // Если товары не найдены, возвращаем 404
+            return NotFound();
         }
 
         [HttpGet("Categories")]
