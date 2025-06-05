@@ -1,12 +1,11 @@
 {
   "Version": 1,
-  "Hash": "Jdi0rspcjszIGVezig9NEM55ig7MB0mTY+0riZI/cQA=",
+  "Hash": "fTl4ln4+6oOLdiSghXA2aQXawP/scRzz0Cei8QvESq8=",
   "Source": "Zooshop",
   "BasePath": "_content/Zooshop",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [],
   "DiscoveryPatterns": [],
-  "Assets": [],
-  "Endpoints": []
+  "Assets": []
 }

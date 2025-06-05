@@ -1,24 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\w2482\\Desktop\\e\\zooshop\\Zooshop.csproj": {}
+    "C:\\Users\\48575\\Desktop\\C#\\zooshop\\Zooshop.csproj": {}
   },
   "projects": {
-    "C:\\Users\\w2482\\Desktop\\e\\zooshop\\Zooshop.csproj": {
+    "C:\\Users\\48575\\Desktop\\C#\\zooshop\\Zooshop.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\w2482\\Desktop\\e\\zooshop\\Zooshop.csproj",
+        "projectUniqueName": "C:\\Users\\48575\\Desktop\\C#\\zooshop\\Zooshop.csproj",
         "projectName": "Zooshop",
-        "projectPath": "C:\\Users\\w2482\\Desktop\\e\\zooshop\\Zooshop.csproj",
-        "packagesPath": "C:\\Users\\w2482\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\w2482\\Desktop\\e\\zooshop\\obj\\",
+        "projectPath": "C:\\Users\\48575\\Desktop\\C#\\zooshop\\Zooshop.csproj",
+        "packagesPath": "C:\\Users\\48575\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\48575\\Desktop\\C#\\zooshop\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\w2482\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Users\\48575\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -43,8 +39,7 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        },
-        "SdkAnalysisLevel": "9.0.100"
+        }
       },
       "frameworks": {
         "net8.0": {
@@ -106,7 +101,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.101/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.202/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Zooshop")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8e9362dcc9baf5b623cc65293f9eca01ff1cefa9")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+41d91b8b8dfd5548b64bc7d0413647e094bcb98d")]
 [assembly: System.Reflection.AssemblyProductAttribute("Zooshop")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Zooshop")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
